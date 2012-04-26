@@ -325,6 +325,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelUpstreamHandler {
      */
     private void setContentTypeHeader(HttpResponse response, File file) {
         MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+        mimeTypesMap.addMimeTypes("application/js");
         response.setHeader(HttpHeaders.Names.CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
     }
 

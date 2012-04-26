@@ -1,9 +1,90 @@
 <html>
 	<head>
 		<title>Netty Ajax Server</title>
-		<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>	
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript">
+			var webSocketCapable=(WebSocket!=null);
+			var is_chrome = /chrome/.test( navigator.userAgent.toLowerCase() );
+			var running = false;
+			var xhr = null;
+			$(function(){
+				if(!webSocketCapable) {
+					$('#ws').remove();					
+				}
+				if(is_chrome) {
+					$('#streamer').remove();
+					$('#streamer_label').remove();
+				}
+				$('#controlButton').bind('click', function() {
+					if(running) {
+						stop();
+						$('#controlButton').text("Start");
+						running = false;
+					}  else  {
+						start();
+						$("input:radio").attr("checked",true); 
+						$('#controlButton').text("Stop");
+						running = true;						
+					}
+				});								
+				// jQuery Init Stuff Here.
+			});			
+			function start() {
+				var pushtype = $("input:radio[name='pushtype'][checked='checked']")[0].id;
+				var lpoll = false;
+				if(pushtype!="ws") {
+					lpoll = (pushtype=="lpoll");
+					xhr = $.ajaxSettings.xhr(); 
+					xhr.multipart = !lpoll;
+					xhr.overrideMimeType("application/json");
+					xhr.open('GET', '/' + pushtype, true);
+					var on = onEvent;
+					var loop = lpoll;
+					xhr.beforeSend = function(r) {						
+						r.setRequestHeader("Keep-Alive", "true")	
+						r.setRequestHeader("Timeout", "3000")
+					};
+					xhr.onreadystatechange = function() { 
+					    if (xhr.readyState == 4) {         
+					        var json = $.parseJSON(xhr.responseText);
+					        on(json);
+					        if(loop) {
+					        	xhr.send(null);
+					        }
+					    } 
+					}; 
+					xhr.send(null);					
+				}
+			}
+			function stop() {
+				try { xhr.abort(); } catch (e) {}
+			}
+			function onEvent(data) {
+				var value = data.timeout==null ? data.used : "timeout";
+				//var row = '<table border="1"><tr><td>Time:'  + new Date() + '</td>'
+				var row = '<li>' + value + "</li>";
+				$('#memdisplay').append(row);
+				
+				//committed,	init , max , used
+				if($('#memdisplay').children().size()>20) {
+					$('#memdisplay').children().first().remove();
+				}
+			}
+		</script>		
 	</head>
 	<body>
 		<h3>Netty Ajax Server</h3>
+		<div>
+			<label for="streamer" id="streamer_label" >HTTP Streaming</label>
+			<input type="radio" id="streamer" name="pushtype" checked="checked" >
+			<label for="ws" id="ws_label">WebSockets</label>
+			<input type="radio" id="ws" name="pushtype" >
+			<label for="lpoll" id="lpoll_label" >Long Poll</label>
+			<input type="radio" id="lpoll" name="pushtype" >
+			
+		</div>
+		<br>
+		<button id="controlButton">Start</button>
+		<ol id="memdisplay"></ol>
 	</body>
 </html>

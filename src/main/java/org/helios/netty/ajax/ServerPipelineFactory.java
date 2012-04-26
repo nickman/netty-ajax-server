@@ -24,6 +24,8 @@
  */
 package org.helios.netty.ajax;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -47,7 +49,17 @@ import org.jboss.netty.logging.InternalLogLevel;
 public class ServerPipelineFactory implements ChannelPipelineFactory {
 	/** Instance logger */
 	protected final Logger log = Logger.getLogger(getClass());
-
+	/** The modifier map */
+	protected final Map<String, PipelineModifier> modifierMap;
+	
+	/**
+	 * Creates a new ServerPipelineFactory
+	 * @param modifierMap The modifier map
+	 */
+	public ServerPipelineFactory(Map<String, PipelineModifier> modifierMap) {
+		this.modifierMap = modifierMap;
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
@@ -60,7 +72,7 @@ public class ServerPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addLast("encoder", new HttpResponseEncoder());
 		pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
 		pipeline.addLast("logger", new LoggingHandler(InternalLogLevel.INFO));
-		pipeline.addLast("router", new DefaultChannelHandler()); 
+		pipeline.addLast(DefaultChannelHandler.NAME, new DefaultChannelHandler(modifierMap)); 
 		log.info("Created Pipeline [" + pipeline + "]");
 		return pipeline;
 	}

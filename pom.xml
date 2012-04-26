@@ -10,9 +10,10 @@
   <properties>
     <junit.version>4.8.2</junit.version>
     <netty.version>3.4.1.Final</netty.version>
-    <jsontools-core.version>1.7</jsontools-core.version>
-    <json-simple.version>1.1</json-simple.version>
+    <json.version>20090211</json.version>
     <log4j.version>1.2.16</log4j.version>
+    <reflections.version>0.9.5</reflections.version>
+    <slf4j.version>1.6.1</slf4j.version>
   </properties>
 
 	<build>
@@ -56,15 +57,27 @@
 	      <version>${netty.version}</version>
 	    </dependency>
 		<dependency>
-		  <groupId>com.googlecode.json-simple</groupId>
-		  <artifactId>json-simple</artifactId>
-		  <version>${json-simple.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
-		</dependency>					    
+		</dependency>			
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
+		</dependency>
+	    <dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>${reflections.version}</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.slf4j</groupId>
+	      <artifactId>slf4j-log4j12</artifactId>
+	      <version>${slf4j.version}</version>
+	    </dependency>
+	    
+				    
 	  </dependencies>
 	
 

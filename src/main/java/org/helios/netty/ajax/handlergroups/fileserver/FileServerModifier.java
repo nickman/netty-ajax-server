@@ -25,21 +25,23 @@
 package org.helios.netty.ajax.handlergroups.fileserver;
 
 import org.helios.netty.ajax.PipelineModifier;
+import org.helios.netty.ajax.handlergroups.URIHandler;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
-import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
-import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
-import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 
 /**
- * <p>Title: FileServer</p>
+ * <p>Title: FileServerModifier</p>
  * <p>Description: Pipeline modifier to provide file server functionality</p> 
  * <p>Company: Helios Development Group LLC</p>
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
- * <p><code>org.helios.netty.ajax.handlergroups.fileserver.FileServer</code></p>
+ * <p><code>org.helios.netty.ajax.handlergroups.fileserver.FileServerModifier</code></p>
  */
-
-public class FileServer implements PipelineModifier {
+@URIHandler(uri={"ui", ""})
+public class FileServerModifier implements PipelineModifier {
+	/** The handler that this modifier adds at the end of the pipeline */
+	protected final ChannelHandler handler = new HttpStaticFileServerHandler();
+	/** The name of the handler this modifier adds */
+	public static final String NAME = "fileserver";
 
 	/**
 	 * {@inheritDoc}
@@ -47,15 +49,17 @@ public class FileServer implements PipelineModifier {
 	 */
 	@Override
 	public void modifyPipeline(final ChannelPipeline pipeline) {
-//		for(String handlerName :pipeline.getNames()) {
-//			pipeline.remove(handlerName);
-//		}
-//		pipeline.addLast("decoder", new HttpRequestDecoder());
-//		pipeline.addLast("aggregator", new HttpChunkAggregator(65536));
-//		pipeline.addLast("encoder", new HttpResponseEncoder());
-//		pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
-		if(pipeline.)
-		pipeline.addLast("fileserver", new HttpStaticFileServerHandler());
+		if(pipeline.get(NAME)==null) {
+			pipeline.addLast(NAME, handler);
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see org.helios.netty.ajax.PipelineModifier#getName()
+	 */
+	public String getName() {
+		return NAME;
 	}
 
 }

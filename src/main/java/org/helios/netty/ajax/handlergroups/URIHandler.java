@@ -22,28 +22,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org. 
  *
  */
-package org.helios.netty.ajax;
+package org.helios.netty.ajax.handlergroups;
 
-import org.jboss.netty.channel.ChannelPipeline;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * <p>Title: PipelineModifier</p>
- * <p>Description: Defines a class that modifies a pipeline for a specific purpose</p> 
+ * <p>Title: URIHandler</p>
+ * <p>Description: </p> 
  * <p>Company: Helios Development Group LLC</p>
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
- * <p><code>org.helios.netty.ajax.PipelineModifier</code></p>
+ * <p><code>org.helios.netty.ajax.handlergroups.URIHandler</code></p>
  */
-
-public interface PipelineModifier {
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface URIHandler {
 	/**
-	 * Modifies the passed pipeline to provide specific functionality
-	 * @param pipeline The pipeline to modify
+	 * Returns the simple URIs that the annotated handler will handle
+	 * @return the simple URIs that the annotated handler will handle
 	 */
-	public void modifyPipeline(ChannelPipeline pipeline);
-	
-	/**
-	 * Returns the name of this modifier
-	 * @return the name of this modifier
-	 */
-	public String getName();
+	public String[] uri();
 }

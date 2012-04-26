@@ -22,28 +22,45 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org. 
  *
  */
-package org.helios.netty.ajax;
+package org.helios.netty.ajax.handlergroups.streamer;
 
+import org.helios.netty.ajax.PipelineModifier;
+import org.helios.netty.ajax.handlergroups.URIHandler;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 
 /**
- * <p>Title: PipelineModifier</p>
- * <p>Description: Defines a class that modifies a pipeline for a specific purpose</p> 
+ * <p>Title: StreamerModifier</p>
+ * <p>Description: Pipeline modifier to create a pipeline that will use HTTP streaming to send updates to the client.</p> 
  * <p>Company: Helios Development Group LLC</p>
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
- * <p><code>org.helios.netty.ajax.PipelineModifier</code></p>
+ * <p><code>org.helios.netty.ajax.handlergroups.streamer.StreamerModifier</code></p>
  */
-
-public interface PipelineModifier {
-	/**
-	 * Modifies the passed pipeline to provide specific functionality
-	 * @param pipeline The pipeline to modify
-	 */
-	public void modifyPipeline(ChannelPipeline pipeline);
+@URIHandler(uri={"streamer"})
+public class StreamerModifier implements PipelineModifier {
+	/** The handler that this modifier adds at the end of the pipeline */
+	protected final ChannelHandler handler = new StreamingHandler();
+	/** The name of the handler this modifier adds */
+	public static final String NAME = "streamer";
 	
 	/**
-	 * Returns the name of this modifier
-	 * @return the name of this modifier
+	 * {@inheritDoc}
+	 * @see org.helios.netty.ajax.PipelineModifier#modifyPipeline(org.jboss.netty.channel.ChannelPipeline)
 	 */
-	public String getName();
+	@Override
+	public void modifyPipeline(ChannelPipeline pipeline) {
+		if(pipeline.get(NAME)==null) {
+			pipeline.addLast(NAME, handler);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see org.helios.netty.ajax.PipelineModifier#getName()
+	 */
+	@Override
+	public String getName() {
+		return NAME;
+	}
+
 }

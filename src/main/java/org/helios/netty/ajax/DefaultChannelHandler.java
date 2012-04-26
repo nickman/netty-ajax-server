@@ -24,9 +24,12 @@
  */
 package org.helios.netty.ajax;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
-import org.helios.netty.ajax.handlergroups.fileserver.FileServer;
+import org.helios.netty.ajax.handlergroups.fileserver.FileServerModifier;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.HttpRequest;
@@ -44,25 +47,49 @@ public class DefaultChannelHandler extends SimpleChannelUpstreamHandler {
 	/** Instance logger */
 	protected final Logger log = Logger.getLogger(getClass());
 
-	protected FileServer fs = new FileServer();
-	
+	/** The name of this handler in the pipeline */
+	public static final String NAME = "router";
+
+	protected final Map<String, PipelineModifier> modifierMap;
 	/**
 	 * Creates a new DefaultChannelHandler
+	 * @param modifierMap The map of modifiers, keyed by the URI they accept.
 	 */
-	public DefaultChannelHandler() {
-		
-		
+	public DefaultChannelHandler(Map<String, PipelineModifier> modifierMap) {
+		this.modifierMap = modifierMap;		
 	}
 	
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {    	
         HttpRequest request = (HttpRequest)e.getMessage();
         PipelineModifier modifier = getModifier(request.getUri());
-        modifier.modifyPipeline(ctx.getPipeline());
+        if(!modifier.getName().equals(ctx.getAttachment())) {
+        	clearLastHandler(ctx.getPipeline());
+        	modifier.modifyPipeline(ctx.getPipeline());
+        	ctx.setAttachment(modifier.getName());
+        }
         ctx.sendUpstream(e);
     }
     
+    /**
+     * Removes the last handler from the pipeline unless the last handler is this handler.
+     * @param pipeline The pipeline to operate on
+     */
+    protected void clearLastHandler(ChannelPipeline pipeline) {
+    	if(this!=pipeline.getLast()) {
+    		pipeline.removeLast();
+    	}
+    }
+    
     protected PipelineModifier getModifier(String uri) {
-    	return fs;
+    	String[] frags = uri.trim().split("\\/");
+    	for(String frag: frags) {
+    		if(frag.trim().isEmpty()) continue;
+    		PipelineModifier modifier = modifierMap.get(frag.trim());
+    		if(modifier!=null) {
+    			return modifier;
+    		}
+    	}
+    	return modifierMap.get("");
     }
 
 }

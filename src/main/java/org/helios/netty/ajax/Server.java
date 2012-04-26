@@ -26,11 +26,15 @@ package org.helios.netty.ajax;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.helios.netty.ajax.handlergroups.URIHandler;
 import org.helios.netty.ajax.handlergroups.fileserver.HttpStaticFileServerHandler;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -38,6 +42,9 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Log4JLoggerFactory;
+import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 /**
  * <p>Title: Server</p>
@@ -111,7 +118,6 @@ public class Server {
 		if(root==null) {
 			root = DEFAULT_CONTENT_DIR;
 		}
-		
 		new Server(iface, port, root);
 	}
 	
@@ -129,12 +135,39 @@ public class Server {
 		isock = new InetSocketAddress(iface, port);
 		bossPool = Executors.newCachedThreadPool();
 		workerPool =  Executors.newCachedThreadPool();
-		pipelineFactory = new ServerPipelineFactory();
+		pipelineFactory = new ServerPipelineFactory(getPipelineModifiers());
 		channelFactory = new NioServerSocketChannelFactory(bossPool, workerPool);
 		bstrap = new ServerBootstrap(channelFactory);
 		bstrap.setPipelineFactory(pipelineFactory);
 		bstrap.bind(isock);
 		LOG.info("Netty-Ajax Server Started with Root [" + contentRoot + "]");		
+		new MemoryReporter(5).start();
+	}
+	
+	protected Map<String, PipelineModifier> getPipelineModifiers() {
+		Map<String, PipelineModifier> map = new ConcurrentHashMap<String, PipelineModifier>();
+		Reflections ref = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forClassLoader()));
+		for(Class<?> clazz: ref.getTypesAnnotatedWith(URIHandler.class)) {
+			if(PipelineModifier.class.isAssignableFrom(clazz)) {
+				URIHandler uhandler = clazz.getAnnotation(URIHandler.class);
+				try {
+					PipelineModifier pm = (PipelineModifier)clazz.newInstance();
+					String[] names = uhandler.uri();
+					for(String name: names) {
+						name = name.trim().toLowerCase();
+						if(map.containsKey(name)) {
+							LOG.warn("The handler [" + pm.getName() + "] offering URI [" + name + "] could not be registered as that URI is already registered" );
+						} else {
+							map.put(name, pm);
+						}
+					}
+				} catch (Exception e) {
+					LOG.error("Failed to create PipelineModifier instance from class [" + clazz.getName() + "]");
+				}
+			}
+		}
+		LOG.info("Discovered PipelineModifiers:" + map);
+		return map;
 	}
 
 }
