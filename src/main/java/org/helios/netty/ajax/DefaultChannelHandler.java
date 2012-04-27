@@ -27,12 +27,12 @@ package org.helios.netty.ajax;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.helios.netty.ajax.handlergroups.fileserver.FileServerModifier;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.websocketx.WebSocketFrame;
 
 /**
  * <p>Title: DefaultChannelHandler</p>
@@ -59,14 +59,17 @@ public class DefaultChannelHandler extends SimpleChannelUpstreamHandler {
 		this.modifierMap = modifierMap;		
 	}
 	
-    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {    	
-        HttpRequest request = (HttpRequest)e.getMessage();
-        PipelineModifier modifier = getModifier(request.getUri());
-        if(!modifier.getName().equals(ctx.getAttachment())) {
-        	clearLastHandler(ctx.getPipeline());
-        	modifier.modifyPipeline(ctx.getPipeline());
-        	ctx.setAttachment(modifier.getName());
-        }
+    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {   
+    	Object message = e.getMessage();
+    	if(message instanceof HttpRequest) { 
+	        HttpRequest request = (HttpRequest)message;
+	        PipelineModifier modifier = getModifier(request.getUri());
+	        if(!modifier.getName().equals(ctx.getAttachment())) {
+	        	clearLastHandler(ctx.getPipeline());
+	        	modifier.modifyPipeline(ctx.getPipeline());
+	        	ctx.setAttachment(modifier.getName());
+	        }
+    	}
         ctx.sendUpstream(e);
     }
     

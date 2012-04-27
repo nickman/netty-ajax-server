@@ -92,7 +92,7 @@ public class LongPollHandler implements ChannelUpstreamHandler, ChannelDownstrea
 		}
 		
 		HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
-		response.setContent(ChannelBuffers.copiedBuffer(message.toString(), CharsetUtil.UTF_8));
+		response.setContent(ChannelBuffers.copiedBuffer("\n" + message.toString() + "\n", CharsetUtil.UTF_8));
 		response.setHeader(CONTENT_TYPE, "application/json");
 		ctx.sendDownstream(new DownstreamMessageEvent(channel, Channels.future(channel), response, channel.getRemoteAddress()));		
 	}
