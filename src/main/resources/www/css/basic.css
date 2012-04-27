@@ -1,0 +1,132 @@
+body { margin: 0; padding: 0; }
+pre {
+  font-family: monospace;
+  margin: 0; padding: 3px; border-bottom: 1px solid #ddd;
+  background: #fff;
+  white-space: pre-wrap;
+}
+pre.file1 { background-color: #f0e0e0; }
+pre.file2 { background-color: #f0f0f0; }
+pre.file3 { background-color: #ffeeee; }
+pre:hover { background-color: #ffeeee; }
+
+html, body, form, fieldset, h1, h2, h3, h4, h5, h6, p, pre, blockquote, ul, ol, dl, address {
+	margin:0;
+	padding:0;
+		}
+body {
+	background: #fff ;
+	font:76%/160% "Trebuchet MS",Verdana,Arial,Helvetica,sans-serif;
+	}
+p {
+	text-align:center;
+	}	
+a:link {
+	color:#d42945;
+	text-decoration:none;
+	border-bottom:1px dotted #ffbac8;
+	}	
+a:visited {
+	color:#d42945;
+	border-bottom:none;
+	text-decoration:none;
+	}		
+a:hover,
+a:focus {
+	color:#f03b58;
+	border-bottom:1px solid #f03b58;
+	text-decoration:none;
+	}
+table a,
+table a:link,
+table a:visited {
+	border:none;
+	}							
+	
+img {
+	border:0;
+	margin-top:.5em;
+	}	
+table {
+	width:90%;
+	margin-bottom:0;
+	margin-top:0;
+	
+	border-top:1px solid #e5eff8;
+	border-right:1px solid #e5eff8;
+	margin:1em auto;
+		border-collapse:collapse;
+	}
+caption {
+	color: #9ba9b4;
+	font-size:.94em;
+		letter-spacing:.1em;
+		margin:1em 0 0 0;
+		padding:0;
+		caption-side:top;
+		text-align:center;
+	}	
+tr.odd td	{
+	background:#f7fbff
+	}
+tr.odd .column1	{
+	background:#f4f9fe;
+	}	
+.column1	{
+	background:#f9fcfe;
+	}
+td {
+	color:#678197;
+	border-bottom:1px solid #e5eff8;
+	border-left:1px solid #e5eff8;
+	padding:.0em 0em;
+	text-align:left;
+	}				
+th {
+	font-weight:normal;
+	color: #678197;
+	text-align:left;
+	border-bottom: 1px solid #e5eff8;
+	border-left:1px solid #e5eff8;
+	padding:.3em 1em;
+	}							
+thead th {
+	background:#f4f9fe;
+	text-align:center;
+	font:bold 1.2em/2em "Century Gothic","Trebuchet MS",Arial,Helvetica,sans-serif;
+	color:#66a3d3
+	}	
+tfoot th {
+	text-align:center;
+	background:#f4f9fe;
+	}	
+tfoot th strong {
+	font:bold 1.2em "Century Gothic","Trebuchet MS",Arial,Helvetica,sans-serif;
+	margin:.5em .5em .5em 0;
+	color:#66a3d3;
+		}		
+tfoot th em {
+	color:#f03b58;
+	font-weight: bold;
+	font-size: 1.1em;
+	font-style: normal;
+	}	
+	
+div.busyindicator {
+	display:block;
+	position:absolute;
+    top:0;
+    right:2px;
+	
+}
+
+body.err-msg {
+	font-family: Verdana,Arial,sans-serif;
+    font-size: 10px;
+}
+p.err-msg {
+	 margin: 1em 0;   
+}
+strong.err-msg {
+    font-weight: 900;   
+}

@@ -28,11 +28,15 @@ import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.OK;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+import java.util.List;
+
 import org.helios.netty.ajax.SharedChannelGroup;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelDownstreamHandler;
 import org.jboss.netty.channel.ChannelEvent;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
@@ -42,6 +46,7 @@ import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.jboss.netty.util.CharsetUtil;
 import org.json.JSONObject;
 
@@ -66,11 +71,32 @@ public class LongPollHandler implements ChannelUpstreamHandler, ChannelDownstrea
 				Channel channel = e.getChannel();
 				if(SharedChannelGroup.getInstance().find(channel.getId())==null) {
 					HttpRequest request = (HttpRequest)msg;
-					new TimeoutChannel(channel, 3000, HttpHeaders.isKeepAlive(request));					
+					new TimeoutChannel(channel, getTimeout(request), HttpHeaders.isKeepAlive(request));					
 				}
 			}
 		}
 		ctx.sendUpstream(e);
+	}
+	
+	/**
+	 * Determines the timeout for this long poll.
+	 * @param req The HttpRequest
+	 * @return the requested timeout, or forever if one was not found
+	 */
+	protected long getTimeout(HttpRequest req) {
+		long tout = Long.MAX_VALUE;
+		// First try the URL param
+		QueryStringDecoder qp = new QueryStringDecoder(req.getUri());
+		List<String> values = qp.getParameters().get("timeout");
+		if(values!=null && values.size()>0) {
+			try { tout = Long.parseLong(values.iterator().next().trim()); } catch (Exception e) {}
+		}
+		// If nothing then try the request header
+		String tmp = req.getHeader("timeout");
+		if(tmp!=null) {
+			try { tout = Long.parseLong(tmp.trim()); } catch (Exception e) {}
+		}		
+		return tout;
 	}
 
 	/**
@@ -79,7 +105,7 @@ public class LongPollHandler implements ChannelUpstreamHandler, ChannelDownstrea
 	 */
 	@Override
 	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-		Channel channel = e.getChannel();
+		final Channel channel = e.getChannel();
 		if(!channel.isOpen()) return;
 		if(!(e instanceof MessageEvent)) {
             ctx.sendDownstream(e);
@@ -94,7 +120,14 @@ public class LongPollHandler implements ChannelUpstreamHandler, ChannelDownstrea
 		HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
 		response.setContent(ChannelBuffers.copiedBuffer("\n" + message.toString() + "\n", CharsetUtil.UTF_8));
 		response.setHeader(CONTENT_TYPE, "application/json");
-		ctx.sendDownstream(new DownstreamMessageEvent(channel, Channels.future(channel), response, channel.getRemoteAddress()));		
+		ChannelFuture cf = Channels.future(channel);
+		cf.addListener(new ChannelFutureListener(){
+			public void operationComplete(ChannelFuture f) throws Exception {
+				channel.close();
+			}
+		});
+		ctx.sendDownstream(new DownstreamMessageEvent(channel, cf, response, channel.getRemoteAddress()));
+//		Channels.close(ctx, Channels.future(channel));
 	}
 
 

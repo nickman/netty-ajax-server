@@ -33,9 +33,8 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelConfig;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.util.HashedWheelTimer;
 import org.jboss.netty.util.Timeout;
 import org.jboss.netty.util.TimerTask;
@@ -111,7 +110,7 @@ public class TimeoutChannel implements Channel, TimerTask {
 	 * @see org.jboss.netty.channel.Channel#write(java.lang.Object)
 	 */
 	public ChannelFuture write(Object message) {
-		resetTimer();
+		SharedChannelGroup.getInstance().remove(this);
 		return channel.write(message);
 	}
 
@@ -121,9 +120,20 @@ public class TimeoutChannel implements Channel, TimerTask {
 	 * @see org.jboss.netty.channel.Channel#write(java.lang.Object, java.net.SocketAddress)
 	 */
 	public ChannelFuture write(Object message, SocketAddress remoteAddress) {
-		resetTimer();
+		SharedChannelGroup.getInstance().remove(this);
 		return channel.write(message, remoteAddress);
 	}
+	
+	/**
+	 * @return
+	 * @see org.jboss.netty.channel.Channel#close()
+	 */
+	public ChannelFuture close() {
+		Timeout t = timerTimeout.getAndSet(null);
+		if(t!=null) t.cancel();
+		return channel.close();
+	}
+	
 	
 
 	/**
@@ -248,14 +258,6 @@ public class TimeoutChannel implements Channel, TimerTask {
 	 */
 	public ChannelFuture unbind() {
 		return channel.unbind();
-	}
-
-	/**
-	 * @return
-	 * @see org.jboss.netty.channel.Channel#close()
-	 */
-	public ChannelFuture close() {
-		return channel.close();
 	}
 
 	/**

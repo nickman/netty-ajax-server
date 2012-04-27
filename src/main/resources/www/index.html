@@ -2,20 +2,66 @@
 	<head>
 		<title>Netty Ajax Server</title>
 		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
-		<script type="text/javascript" src="js/ajaxpush.js"></script>		
+		<script type="text/javascript" src="ui/js/jquery-ui-1.8.19.custom.min.js"></script>	
+		<script type="text/javascript" src="js/jquery.dateFormat-1.0.js"></script>
+		<script type="text/javascript" src="js/ajaxpush.js"></script>	
+		<link type="text/css" href="css/basic.css" rel="stylesheet" media="all"/>
+		<link type="text/css" href="ui/css/cupertino/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
+			
 	</head>
 	<body>
 		<h3>Netty Ajax Server</h3>
-		<div>
-			<label for="streamer" id="streamer_label" >HTTP Streaming</label>
-			<input type="radio" id="streamer" name="pushtype" checked="checked" >
-			<label for="ws" id="ws_label">WebSockets</label>
-			<input type="radio" id="ws" name="pushtype" >
-			<label for="lpoll" id="lpoll_label" >Long Poll</label>
-			<input type="radio" id="lpoll" name="pushtype" >
+		<div id="accordion">
+    		<h3 class="stream" ><a href="#">HTTP Streaming</a></h3>
+    		<div class="stream">
+    			<label for="streamer" id="streamer_label" >HTTP Streaming</label>
+				<input type="radio" id="streamer" name="pushtype" >
+				<label for="streamcount">Responses:</label>
+				<input type=number id="streamcount" class="counter" value="0" disabled="disabled" >					
+				<div  id="streamerbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>			    		
+    		</div>
+
+    		<h3 class="websock"><a href="#">WebSockets</a></h3>
+    		<div class="websock">
+				<label for="ws" id="ws_label">WebSockets</label>
+				<input type="radio" id="ws" name="pushtype" >
+				<label for="wscount">Responses:</label>
+				<input type="number" id="wscount" class="counter" value="0" disabled="disabled" >
+				<div id="wsbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>
+    		</div>
+    		
+    		<h3 class="longp" ><a href="#">Long Polling</a></h3>
+    		<div class="longp">
+				<label for="lpoll" id="lpoll_label" >Long Poll</label>
+				<input type="radio" id="lpoll" name="pushtype">
+				<div id="timeoutdiv">
+					<label for="lpolltimeout" id="lpoll_lpolltimeout">Long Poll Timeout (ms):</label>
+					<input type="number" id="lpolltimeout" value="3000" >
+					<label for="lpollcount">Responses:</label>
+					<input type="number" id="lpollcount" class="counter" value="0" disabled="disabled" >
+					<div id="longpollbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>
+				</div>
+    		</div>
+    		
 		</div>
 		<br>
 		<button id="controlButton">Start</button>
-		<ol id="memdisplay"></ol>
+		<button id="clearButton">Clear</button>
+		<span id="statemsg"></span>
+		<div id="display"></div>
+		
+		
+		<div class="err-msg">
+		    <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+		        <p>
+		            <span class="ui-icon ui-icon-alert"
+		            style="float: left; margin-right: .3em;"></span>
+		            <strong>Alert:</strong><span id="err-text"></span>
+		            <span style="float: right; " >&nbsp;&nbsp;<i>Click to Dismiss</i></span>
+		        </p>
+		    </div>
+		</div>
+	
+		
 	</body>
 </html>
