@@ -130,3 +130,30 @@ p.err-msg {
 strong.err-msg {
     font-weight: 900;   
 }
+
+div.output-content {
+	display:block;
+	width: 70%;
+	height: 50%;
+	position:relative;
+	left:10px;
+	top:20px;
+}
+
+div.controls {
+	position:absolute;
+    top:30px;
+	right:30%;
+}
+
+div.controlx {
+	position:relative;
+	left:10px;
+	top: 10px;
+}
+
+div.chart {
+	position:relative;
+	width:20%;
+	height:20%
+}

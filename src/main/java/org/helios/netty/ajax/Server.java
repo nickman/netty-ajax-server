@@ -27,15 +27,15 @@ package org.helios.netty.ajax;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.helios.netty.ajax.handlergroups.URIHandler;
 import org.helios.netty.ajax.handlergroups.fileserver.HttpStaticFileServerHandler;
+import org.helios.netty.jmx.MetricCollector;
+import org.helios.netty.jmx.ThreadPoolFactory;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -133,15 +133,20 @@ public class Server {
 		this.contentRoot = root;
 		HttpStaticFileServerHandler.contentRoot = root;
 		isock = new InetSocketAddress(iface, port);
-		bossPool = Executors.newCachedThreadPool();
-		workerPool =  Executors.newCachedThreadPool();
+		new MetricCollector(5000);
+		bossPool = ThreadPoolFactory.newCachedThreadPool(getClass().getPackage().getName(), "Boss");
+		workerPool =  ThreadPoolFactory.newCachedThreadPool(getClass().getPackage().getName(), "Worker");
 		pipelineFactory = new ServerPipelineFactory(getPipelineModifiers());
 		channelFactory = new NioServerSocketChannelFactory(bossPool, workerPool);
 		bstrap = new ServerBootstrap(channelFactory);
 		bstrap.setPipelineFactory(pipelineFactory);
 		bstrap.bind(isock);
 		LOG.info("Netty-Ajax Server Started with Root [" + contentRoot + "]");		
-		new MemoryReporter(5).start();
+		//new MemoryReporter(5).start();
+		
+		try { Thread.currentThread().join(); } catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 	}
 	
 	protected Map<String, PipelineModifier> getPipelineModifiers() {

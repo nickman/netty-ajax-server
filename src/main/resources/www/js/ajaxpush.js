@@ -5,25 +5,29 @@
 	var timeoutHandle = -1;
 	var xhr = null;
 	var pushtype = "";
+	var outputChart = true; 
+	var chartData = {};
+	var chartPlots = {};
+	var lastData = null;
 	/**
 	 * Initializes the client
 	 */
 	$(function(){
 		$(".err-msg").hide();
-		$(".err-msg").css('width', '40%');
-		
+		$(".err-msg").css('width', '40%');	
 		$(".err-msg").bind('click', function() {
 			$(".err-msg").hide();
 		});
-		$('div.busyindicator').css({'display':'none'});
 		
+		$('div.busyindicator').css({'display':'none'});
+		$('#display').resizable().draggable();
 		$( "#accordion" ).accordion({collapsible: true, active:false}).css('width', '40%');
 		$( "#accordion" ).accordion({
 			   change: function(event, ui) {
 				   ui.newHeader.next('div').children('input[type="radio"]').attr('checked', 'checked');
 			   }
 		});
-		
+		$('button').button();
 		if(!webSocketCapable) {
 			$('#ws').remove();	
 			$('.websock').remove();
@@ -36,18 +40,34 @@
 		$('#controlButton').bind('click', function() {
 			if(running) {
 				stop();
-				$('#controlButton').text("Start");
+				$('#controlButton').button({label: "Start"});
 				running = false;
 			}  else  {
-				start();						
-				$('#controlButton').text("Stop");
-				running = true;						
+				if(start()) {						
+					$('#controlButton').button({label: "Stop"});
+					running = true;
+				}
 			}
 		});								
 		$('#clearButton').bind('click', function() {
 			$('#display').children().remove();
 			$('.counter').attr('value', '0');
 		});
+		$("#outputFormat").bind('click', function() {
+			if(outputChart) {
+				outputChart = false;
+				$("#outputFormat").button({ label: "Output:Raw" })
+				$("#displayChart").hide();
+				$("#displayRaw").show();
+			} else {
+				outputChart = true;
+				$("#outputFormat").button({ label: "Output:Charts" })
+				$("#displayChart").show();
+				$("#displayRaw").hide();				
+			}
+		});
+		$("#displayChart").show();
+		
 	});
 	/**
 	 * Turns the busy indicator on
@@ -66,22 +86,25 @@
 	 * @param message The error message
 	 */
 	function errorMessage(message) {
-		$('#err-text').text(message);
+		$('#err-text').text(message);		
+		$(".err-msg").css('position', 'relative').css('zIndex', 9999);
 		$(".err-msg").show();
+		//$(".err-msg").dialog("option", "width", 500));
 	}
 	/**
 	 * Starts the push
 	 */
 	function start() {
+		chartData = [{label: "Boss Active Threads", data: []}, {label: "Worker Active Threads", data: []}];
 		var pType = $("input:radio[name='pushtype'][checked='checked']");
-		if(pType==null || pType.size()<1) {
+		if(pType==null || pType.size()<1) {			
 			errorMessage("No push type was selected. Pick a push type.")
-			return;
+			return false;
 		} 
 		pushtype = pType[0].id;
 		if(pushtype==null) {
 			console.error("No push type");
-			return;
+			return false;
 		}
 		var name = null;
 		if(pushtype=="lpoll") {
@@ -95,6 +118,7 @@
 			name = "WebSockets";
 		}
 		$('#statemsg').html("Started Push Using " + name);
+		return true;
 	}
 	/**
 	 * Starts the streaming push
@@ -200,10 +224,13 @@
 	function onEvent(data) {
 		increment('#' + pushtype + 'count', 'value');
 		if(data!=null) {
-			$('#display').append(formatJson(data));
-			if($('#display').children().size()>20) {
-				$('#display').children().first().remove();
+			lastData = data;
+			$('#displayRaw').append(formatJson(data));
+			if($('#displayRaw').children().size()>20) {
+				$('#displayRaw').children().first().remove();
 			}
+			
+			
 		}
 	}
 	/**
