@@ -24,6 +24,7 @@
  */
 package org.helios.netty.ajax;
 
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 
 /**
@@ -46,4 +47,10 @@ public interface PipelineModifier {
 	 * @return the name of this modifier
 	 */
 	public String getName();
+	
+	/**
+	 * Returns the channel handler to insert into the pipeline
+	 * @return the channel handler to insert into the pipeline
+	 */
+	public ChannelHandler getChannelHandler();
 }

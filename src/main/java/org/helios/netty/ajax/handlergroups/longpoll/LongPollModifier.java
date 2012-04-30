@@ -26,7 +26,6 @@ package org.helios.netty.ajax.handlergroups.longpoll;
 
 import org.helios.netty.ajax.PipelineModifier;
 import org.helios.netty.ajax.handlergroups.URIHandler;
-import org.helios.netty.ajax.handlergroups.streamer.StreamingHandler;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 
@@ -43,6 +42,16 @@ public class LongPollModifier implements PipelineModifier {
 	protected final ChannelHandler handler = new LongPollHandler();
 	/** The name of the handler this modifier adds */
 	public static final String NAME = "lpoll";
+
+	/**
+	 * {@inheritDoc}
+	 * @see org.helios.netty.ajax.PipelineModifier#getChannelHandler()
+	 */
+	@Override
+	public ChannelHandler getChannelHandler() {
+		return handler;
+	}
+	
 	
 	/**
 	 * {@inheritDoc}

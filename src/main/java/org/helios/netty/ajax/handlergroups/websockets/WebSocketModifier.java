@@ -45,6 +45,15 @@ public class WebSocketModifier implements PipelineModifier {
 	
 	/**
 	 * {@inheritDoc}
+	 * @see org.helios.netty.ajax.PipelineModifier#getChannelHandler()
+	 */
+	public ChannelHandler getChannelHandler() {
+		return handler;
+	}
+	
+	
+	/**
+	 * {@inheritDoc}
 	 * @see org.helios.netty.ajax.PipelineModifier#modifyPipeline(org.jboss.netty.channel.ChannelPipeline)
 	 */
 	@Override

@@ -42,6 +42,14 @@ public class FileServerModifier implements PipelineModifier {
 	protected final ChannelHandler handler = new HttpStaticFileServerHandler();
 	/** The name of the handler this modifier adds */
 	public static final String NAME = "fileserver";
+	
+	/**
+	 * {@inheritDoc}
+	 * @see org.helios.netty.ajax.PipelineModifier#getChannelHandler()
+	 */
+	public ChannelHandler getChannelHandler() {
+		return handler;
+	}
 
 	/**
 	 * {@inheritDoc}

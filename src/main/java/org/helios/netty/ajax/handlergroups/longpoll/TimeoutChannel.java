@@ -28,6 +28,7 @@ import java.net.SocketAddress;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.log4j.Logger;
 import org.helios.netty.ajax.SharedChannelGroup;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelConfig;
@@ -58,6 +59,12 @@ public class TimeoutChannel implements Channel, TimerTask {
 	
 	/** The timer for implementing timeouts */
 	protected static final HashedWheelTimer timer = new HashedWheelTimer();
+	/** Instance logger */
+	protected final Logger log;
+	
+	static {
+		timer.start();
+	}
 	
 	/**
 	 * Creates a new TimeoutChannel
@@ -69,7 +76,8 @@ public class TimeoutChannel implements Channel, TimerTask {
 		this.channel = channel;
 		this.timeout = timeout;
 		this.keepAlive = keepAlive;
-		resetTimer();
+		log = Logger.getLogger(getClass().getName() + "." + channel.getId());
+		timerTimeout.getAndSet(timer.newTimeout(this, this.timeout, TimeUnit.MILLISECONDS));
 		SharedChannelGroup.getInstance().add(this);
 	}
 	
@@ -82,7 +90,8 @@ public class TimeoutChannel implements Channel, TimerTask {
 	 */
 	public void run(Timeout tout) {
 		if(!tout.isCancelled()) {
-			if(keepAlive && channel.isOpen()) {				
+			if(keepAlive && channel.isOpen()) {
+				log.info("Timeout on waiting channel");
 				write(String.format("{\"timeout\":%s}", timeout));
 //				resetTimer();
 //				channel.getPipeline().getContext(LongPollModifier.NAME).sendDownstream(

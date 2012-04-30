@@ -125,9 +125,16 @@
 	 * Starts the long poll push
 	 */
 	function startLongPoll() {
-		var on = onEvent;		
+		var on = onEvent;
+		var timeout = null;
+		timeout = $('#lpolltimeout').attr('value');
+		if(isNumber(timeout)) {
+			timeout = '/?timeout=' + timeout;
+		} else {
+			timeout = '';
+		}
 		busyOn();
-		xhr = $.getJSON("/lpoll", function(events) {
+		xhr = $.getJSON("/lpoll" + timeout, function(events) {
 			  on(events);
 			})
 			.error(function(req,msg) {
