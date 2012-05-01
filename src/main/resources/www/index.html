@@ -5,6 +5,8 @@
 		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript" src="ui/js/jquery-ui-1.8.19.custom.min.js"></script>	
 		<script type="text/javascript" src="js/jquery.dateFormat-1.0.js"></script>
+		<script type="text/javascript" src="js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="js/jquery.metadata.js"></script>
 		<script type="text/javascript" src="js/ajaxpush.js"></script>
 		<script type="text/javascript" src="flot/jquery.flot.min.js"></script>
 		
@@ -16,7 +18,7 @@
 		<h3>Netty Ajax Server</h3>
 		
 		<div id="accordion">
-    		<h3 class="stream" ><a href="#">HTTP Streaming</a></h3>
+    		<h3 class="stream pushtypeh"><a href="#">HTTP Streaming</a></h3>
     		<div class="stream">
     			<label for="streamer" id="streamer_label" >HTTP Streaming</label>
 				<input type="radio" id="streamer" name="pushtype" >
@@ -25,16 +27,16 @@
 				<div  id="streamerbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>			    		
     		</div>
 
-    		<h3 class="websock"><a href="#">WebSockets</a></h3>
+    		<h3 class="websock pushtypeh"><a href="#">WebSockets</a></h3>
     		<div class="websock">
 				<label for="ws" id="ws_label">WebSockets</label>
-				<input type="radio" id="ws" name="pushtype" >
+				<input type="radio" id="ws" name="pushtype"  >
 				<label for="wscount">Responses:</label>
 				<input type="number" id="wscount" class="counter" value="0" disabled="disabled" >
 				<div id="wsbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>
     		</div>
     		
-    		<h3 class="longp" ><a href="#">Long Polling</a></h3>
+    		<h3 class="longp pushtypeh" ><a href="#">Long Polling</a></h3>
     		<div class="longp">
 				<label for="lpoll" id="lpoll_label" >Long Poll</label>
 				<input type="radio" id="lpoll" name="pushtype">

@@ -9,6 +9,7 @@
 	var chartData = {};
 	var chartPlots = {};
 	var lastData = null;
+	var dataListeners = {};
 	/**
 	 * Initializes the client
 	 */
@@ -24,7 +25,12 @@
 		$( "#accordion" ).accordion({collapsible: true, active:false}).css('width', '40%');
 		$( "#accordion" ).accordion({
 			   change: function(event, ui) {
+				   $('input[type="radio"][name="pushtype"]').attr('checked', null);
 				   ui.newHeader.next('div').children('input[type="radio"]').attr('checked', 'checked');
+				   var newPs = $('input[type="radio"][name="pushtype"][checked="checked"]')[0].id;
+				   $.cookie('ajax.push.pushtype', newPs, { expires: 365 });
+				   $('h3.pushtypeh').removeClass('pushtypesel')
+				   $('#' + newPs).parent('div').last().prev().addClass('pushtypesel')
 			   }
 		});
 		$('button').button();
@@ -37,6 +43,10 @@
 			$('#streamer_label').remove();
 			$('.stream').remove();
 		}
+		$('input[type="radio"][name="pushtype"]').bind('select', function(event) {
+			console.info("Radio Selected");
+			console.dir(event);
+		});
 		$('#controlButton').bind('click', function() {
 			if(running) {
 				stop();
@@ -55,7 +65,7 @@
 		});
 		$("#outputFormat").bind('click', function() {
 			if(outputChart) {
-				outputChart = false;
+				outputChart = false;				
 				$("#outputFormat").button({ label: "Output:Raw" })
 				$("#displayChart").hide();
 				$("#displayRaw").show();
@@ -65,9 +75,26 @@
 				$("#displayChart").show();
 				$("#displayRaw").hide();				
 			}
+			$.cookie('ajax.push.format', outputChart, { expires: 365 });
 		});
 		$("#displayChart").show();
 		
+		var savedPushType = $.cookie('ajax.push.pushtype');
+		if(savedPushType!=null) {
+			console.info("Restored Last Push Type:" + savedPushType);
+			$('#' + savedPushType).attr("checked", "checked");
+			var ps = $('input[type="radio"][name="pushtype"][checked="checked"]');
+			if(ps.size()==1) {
+				$('h3.pushtypeh').removeClass('pushtypesel')
+				$('input[type="radio"][name="pushtype"][checked="checked"]').parent('div').last().prev().addClass('pushtypesel')
+			}
+		}
+		var savedFormat = $.cookie('ajax.push.format');
+		if(savedFormat!=null) {
+			
+		}
+//		$("#gridMaskInput").val($.cookie('metric_browser.gridMaskInput') || "");	
+//		$.cookie('metric_browser.gridMaskInput', expr, { expires: 365 });
 	});
 	/**
 	 * Turns the busy indicator on
@@ -229,7 +256,8 @@
 			if($('#displayRaw').children().size()>20) {
 				$('#displayRaw').children().first().remove();
 			}
-			
+			console.info("Calling Notify On Data Listeners");
+			notifyListeners(data);
 			
 		}
 	}
@@ -285,4 +313,64 @@
 		}
 		$(expr).attr(at, value);
 	}
+	
+	/**
+	 * Adds a new data listener to be notified when the key specified json data is available
+	 * @param key The key of the json data to be notified of
+	 * @param listener The listener to notify
+	 */
+	function addDataListener(key, listener) {
+		var arr = dataListeners[key];
+		if(arr==null) {
+			arr = [];
+			dataListeners[key] = arr;
+		}
+		arr.push(listener);
+	}
+	
+	/**
+	 * Notifies registered listeners of incoming data matching the listener's data key
+	 * @param json The json data
+	 */
+	function notifyListeners(json) {
+		if(Object.keys(dataListeners).length<1) return;
+		var ts = json.ts;
+		if(ts==null) return;
+		console.info("Calling DataListeners");
+		decompose(json, ts);		
+	}
+	
+	/**
+	 * Recurses through the json data and calls listeners when a matching key with registered listeners is found
+	 * @param data The json data
+	 * @param ts The timestamp
+	 * @param context The current data key (null on first call)
+	 */
+	function decompose(data, ts, context) {
+		if(context==null) context = [];
+	    $.each(data, function(k, v) {	        
+	    	context.push(k);
+	    	if(!$.isPlainObject(v)) {
+	    		var dataKey = context.join('.');
+	    		var listeners = dataListeners[dataKey];
+	    		if(listeners!=null && listeners.length<1) {
+	    			$.each(listeners, function(index, listener){
+	    				listener.onData(v, ts, dataKey);
+	    			});
+	    		}	    		
+	    	}
+	        decompose(v, ts, context);       
+	        context.pop();
+	    });
+	}
+	
+
+
+var listener = {
+    onData: function(v, ts, dataKey) {
+        consle.info('[%s]:%s', dataKey, v);
+    }
+}
+
+addDataListener('threading.threadPools.worker.activeThreads', listener);
 	
