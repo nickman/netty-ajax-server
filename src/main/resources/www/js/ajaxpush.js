@@ -91,7 +91,20 @@
 		}
 		var savedFormat = $.cookie('ajax.push.format');
 		if(savedFormat!=null) {
-			
+			if(savedFormat) {
+				outputChart = savedFormat;
+				if(outputChart) {
+					outputChart = false;				
+					$("#outputFormat").button({ label: "Output:Raw" })
+					$("#displayChart").hide();
+					$("#displayRaw").show();
+				} else {
+					outputChart = true;
+					$("#outputFormat").button({ label: "Output:Charts" })
+					$("#displayChart").show();
+					$("#displayRaw").hide();				
+				}				
+			}
 		}
 //		$("#gridMaskInput").val($.cookie('metric_browser.gridMaskInput') || "");	
 //		$.cookie('metric_browser.gridMaskInput', expr, { expires: 365 });
@@ -255,10 +268,8 @@
 			$('#displayRaw').append(formatJson(data));
 			if($('#displayRaw').children().size()>20) {
 				$('#displayRaw').children().first().remove();
-			}
-			console.info("Calling Notify On Data Listeners");
+			}			
 			notifyListeners(data);
-			
 		}
 	}
 	/**
@@ -316,16 +327,17 @@
 	
 	/**
 	 * Adds a new data listener to be notified when the key specified json data is available
-	 * @param key The key of the json data to be notified of
 	 * @param listener The listener to notify
 	 */
-	function addDataListener(key, listener) {
-		var arr = dataListeners[key];
-		if(arr==null) {
-			arr = [];
-			dataListeners[key] = arr;
-		}
-		arr.push(listener);
+	function addDataListener(listener) {
+		$.each(listener.dataKeys, function(index, key) {
+			var arr = dataListeners[key];
+			if(arr==null) {
+				arr = [];
+				dataListeners[key] = arr;
+			}
+			arr.push(listener);		
+		});		
 	}
 	
 	/**
@@ -336,8 +348,12 @@
 		if(Object.keys(dataListeners).length<1) return;
 		var ts = json.ts;
 		if(ts==null) return;
-		console.info("Calling DataListeners");
-		decompose(json, ts);		
+		decompose(json, ts);	
+		$.each(dataListeners, function(index, arrOfListeners){
+			$.each(arrOfListeners, function(i, listener){
+				listener.onComplete();
+			});
+		});
 	}
 	
 	/**
@@ -353,7 +369,7 @@
 	    	if(!$.isPlainObject(v)) {
 	    		var dataKey = context.join('.');
 	    		var listeners = dataListeners[dataKey];
-	    		if(listeners!=null && listeners.length<1) {
+	    		if(listeners!=null && listeners.length>0) {	    			
 	    			$.each(listeners, function(index, listener){
 	    				listener.onData(v, ts, dataKey);
 	    			});
@@ -366,11 +382,50 @@
 	
 
 
-var listener = {
-    onData: function(v, ts, dataKey) {
-        consle.info('[%s]:%s', dataKey, v);
-    }
-}
-
-addDataListener('threading.threadPools.worker.activeThreads', listener);
+	var ChartManager = Class.create({
+		init: function(props){
+			var cm = this;
+			$.each(props, function(key, value) {
+				cm[key] = value;
+			});
+			cm.dataSpec = [];
+			$.each(cm.labels, function(index, value) {
+				var dataArr = [];
+				cm.dataSpec.push({label: value, data: dataArr});
+				cm.dataArrays[cm.dataKeys[index]] = dataArr;
+			});
+			cm.placeHolder = $('<div id="' + cm.title + '"></div>');
+			$.each(cm.divCss, function(key, value) {
+				cm.placeHolder.css(key, value);
+			});
+					
+		},
+		dataKeys: [],
+		labels:[],
+		dataArrays: {},
+		title: '',
+		dataSpec: [],
+		divCss: {}, 
+		options: {},
+		placeHolder: null,
+		plot: null,		
+	    onData: function(v, ts, dataKey) {
+	        //console.info('[%s]:%s', dataKey, v);
+	        this.dataArrays[dataKey].push([ts, v]);
+	    },
+	    onComplete: function() {
+	        if(this.plot==null) {
+	        	$('#displayChart').append(this.placeHolder);	
+	        	this.plot = $.plot(this.placeHolder, this.dataSpec);	        	
+	        }	    	
+	    } 
+	}); 
+	var cm = new ChartManager({		
+		dataKeys: ['threadPools.worker.activeThreads', 'threadPools.boss.activeThreads'],
+		labels: ["Worker", "Boss"],
+		title: "ThreadPoolActiveThreads",
+		divCss: {width:150, height:150},
+		options: {xaxis: {mode: "time", timeformat: "%M:%S"}}
+	});
+	addDataListener(cm);
 	
