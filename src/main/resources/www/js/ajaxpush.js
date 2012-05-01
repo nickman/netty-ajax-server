@@ -92,14 +92,13 @@
 		var savedFormat = $.cookie('ajax.push.format');
 		if(savedFormat!=null) {
 			if(savedFormat) {
+				console.info("Restored Format. Chart:" + savedFormat);
 				outputChart = savedFormat;
-				if(outputChart) {
-					outputChart = false;				
+				if(!outputChart) {								
 					$("#outputFormat").button({ label: "Output:Raw" })
 					$("#displayChart").hide();
 					$("#displayRaw").show();
-				} else {
-					outputChart = true;
+				} else {					
 					$("#outputFormat").button({ label: "Output:Charts" })
 					$("#displayChart").show();
 					$("#displayRaw").hide();				
@@ -416,7 +415,22 @@
 	    onComplete: function() {
 	        if(this.plot==null) {
 	        	$('#displayChart').append(this.placeHolder);	
-	        	this.plot = $.plot(this.placeHolder, this.dataSpec);	        	
+	        	this.plot = $.plot(this.placeHolder, this.dataSpec, this.options);
+	        	var p = this.plot;
+	        	this.placeHolder.draggable().resizable({ resize: function(event, ui){
+	        		p.resize();
+	        		p.setupGrid();
+	        		p.draw();
+	        	}});	        	
+	        } else {
+//	        	this.plot = $.plot(this.placeHolder, this.dataSpec, this.options);
+	        	var newData = [];
+	        	$.each(this.dataArrays, function(key, array){
+	        		newData.push(array);
+	        	});
+	        	this.plot.setData(newData);
+	        	this.plot.setupGrid();
+	        	this.plot.draw();
 	        }	    	
 	    } 
 	}); 
@@ -425,7 +439,14 @@
 		labels: ["Worker", "Boss"],
 		title: "ThreadPoolActiveThreads",
 		divCss: {width:150, height:150},
-		options: {xaxis: {mode: "time", timeformat: "%M:%S"}}
+		options: {
+			xaxis: {mode: "time", timeformat: "%M:%S"}, 
+			series: { 
+				lines: { show: true }, 
+				points: { show: true }
+			},
+			legend: { show: true }
+		}
 	});
 	addDataListener(cm);
 	
