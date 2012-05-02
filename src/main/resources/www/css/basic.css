@@ -164,8 +164,10 @@ h3.pushtypesel {
 
 div.chartplaceholder {
 	border: medium;
-	border-top:1px solid #e5eff8;
-	border-right:1px solid #e5eff8;
+	border-top:1px solid #0E5491;
+	border-bottom:1px solid #0E5491;
+	border-right:1px solid #0E5491;
+	border-left:1px solid #0E5491;
  	border-collapse:collapse;
  	position:relative;
 }
@@ -180,6 +182,12 @@ div.chartTitle {
 	font-size-adjust: inherit;
 	font-size: smaller;
 	font-stretch: ultra-condensed;
-	font-weight: bold;
+	font-weight: lighter;
 	overflow-x: hidden;
+    color: #000;
+    opacity: 0.3;	
+}
+
+.ui-resizable-helper { 
+	border: 2px dotted #00F; 
 }

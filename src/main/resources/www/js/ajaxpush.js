@@ -366,7 +366,7 @@
 		if(context==null) context = [];
 	    $.each(data, function(k, v) {	        
 	    	context.push(k);
-	    	if(!$.isPlainObject(v)) {
+	    	if(!$.isPlainObject(v) || k.charAt(k.length-1)=='*') {
 	    		var dataKey = context.join('.');
 	    		var listeners = dataListeners[dataKey];
 	    		if(listeners!=null && listeners.length>0) {	    			
@@ -381,23 +381,30 @@
 	}
 
 	function addCharts() {
-		var activeThreadsChart = new ChartManager({		
+		var activeThreadsChart = new LineChart({		
 			dataKeys: ['threadPools.worker.activeThreads', 'threadPools.boss.activeThreads'],
 			labels: ["Worker", "Boss"],
 			title: "Thread Pool Active Threads"
 		});		
 		addDataListener(activeThreadsChart);
-		var completedTasksChart = new ChartManager({		
+		var completedTasksChart = new LineChart({		
 			dataKeys: ['threadPools.worker.completedTasks', 'threadPools.boss.completedTasks'],
 			labels: ["Worker", "Boss"],
 			title: "Thread Pool Completed Tasks"
 		});
 		addDataListener(completedTasksChart);
+		
+		var threadStatesChart = new PieChart({		
+			dataKeys: ['thread-states*'],
+			title: "Thread States"
+		});
+		addDataListener(threadStatesChart);
+		
 	}
 	
 
 
-	var ChartManager = Class.create({
+	var LineChart = Class.create({
 		init: function(props){
 			var cm = this;
 			var display = $('#displayChart');
@@ -418,18 +425,16 @@
 			cm.placeHolder = $('<div id="' + cm.jkey + '" class="chartplaceholder"></div>');
 			
 			display.append(cm.placeHolder);
-			//$('#main').append(cm.placeHolder);
-			$.each(cm.divCss, function(key, value) {
-				cm.placeHolder.css(key, value);				
-			});
-			cm.plot = $.plot($('#' + cm.jkey), cm.dataSpec, cm.options);				
-			var p = cm.plot;
-        	cm.placeHolder.draggable().resizable({ resize: function(event, ui){
-        		p.resize();
-        		p.setupGrid();
-        		p.draw();
-        	}});
-        	$('#' + cm.jkey).prepend($('<div align="middle" class="chartTitle">' + cm.title + '</div>'))
+			var style = $.cookie(cm.jkey);
+			if(style!=null) {
+				$('#' + cm.jkey).attr('style', style);
+			} else {
+				$.each(cm.divCss, function(key, value) {
+					cm.placeHolder.css(key, value);				
+				});				
+			}
+			cm.plot = $.plot($('#' + cm.jkey), cm.dataSpec, cm.options);
+			cm.decoratePlaceHolder();
         	if(cm.seriesSize==null) {
         		cm.seriesSize=20;
         	}
@@ -448,10 +453,34 @@
 			series: { 
 				lines: { show: true }, 
 				points: { show: true }
+			},
+			grid: {
+				borderColor: null,
+				borderWidth: 0
 			}
 		},
 		placeHolder: null,
-		plot: null,		
+		plot: null,	
+		decoratePlaceHolder: function() {
+			var cm = this;
+			this.placeHolder
+    		.draggable({
+    			stop: function(event, ui){
+    				$.cookie(cm.jkey, cm.placeHolder.attr('style'), { expires: 365 });
+    			}
+    		})
+    		.resizable({ 
+    			grid: [50, 50],
+    			helper: "ui-resizable-helper",
+    			resize: function(event, ui){
+	        		cm.plot.resize();
+	        		cm.plot.setupGrid();
+	        		cm.plot.draw();
+	        		$.cookie(cm.jkey, cm.placeHolder.attr('style'), { expires: 365 });	        		
+    			}
+    		});
+			$('#' + cm.jkey).prepend($('<div align="middle" class="chartTitle">' + cm.title + '</div>'))			
+		},
 	    onData: function(v, ts, dataKey) {
 	        this.dataArrays[dataKey].push([ts, v]);
 	    },
@@ -463,13 +492,35 @@
         		}
         	});
         	this.plot.setData(this.dataSpec);
-        	this.plot.setupGrid();
+        	this.plot.setupGrid();        	        
+        	this.plot.getAxes().yaxis.max = Math.round(this.plot.getAxes().yaxis.max * 1.1);
         	this.plot.draw();
 	            	
 	    },
 	    labelFormatter: function (label, series) {
 	    	return '<a href="#' + label + '">' + label + '</a>';
 	    }
-
+	}); 
+	
+	var PieChart = Class.create(LineChart.prototype, {
+		options: {
+			series: {
+	            pie: {
+	                show: true,
+	                radius: 'auto'
+	            }
+			}
+		},
+		onData: function(v, ts, dataKey) {
+			this.dataSpec = [];
+			var d = this.dataSpec;
+			$.each(v, function(key, value){
+				d.push({ label: key,  data: value});
+			});
+		},
+		onComplete: function() {
+			this.plot = $.plot($('#' + this.jkey), this.dataSpec, this.options);	
+			this.decoratePlaceHolder();
+		}
 	}); 
 	

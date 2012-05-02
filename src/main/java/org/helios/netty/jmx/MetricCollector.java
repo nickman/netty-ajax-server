@@ -24,9 +24,12 @@
  */
 package org.helios.netty.jmx;
 
+import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
+import java.util.EnumMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -51,7 +54,10 @@ import org.json.JSONObject;
  */
 public class MetricCollector extends NotificationBroadcasterSupport implements MetricCollectorMXBean, Runnable {
 	/** The memory mx bean */
-	public static final MemoryMXBean mxBean = ManagementFactory.getMemoryMXBean();
+	public static final MemoryMXBean memMxBean = ManagementFactory.getMemoryMXBean();
+	/** The thread mx bean */
+	public static final ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
+	
 	/** The period between collections */
 	protected long period = 5000;
 	/** Serial number factory for thread names */
@@ -95,7 +101,9 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 			final JSONObject json = new JSONObject();
 			notif.setUserData(json);
 			json.put("ts", System.currentTimeMillis()); 
-			json.put("heap", new JSONObject(mxBean.getHeapMemoryUsage()));			
+			json.put("heap", new JSONObject(memMxBean.getHeapMemoryUsage()));
+			json.put("non-heap", new JSONObject(memMxBean.getNonHeapMemoryUsage()));	
+			json.put("thread-states*", new JSONObject(getThreadStates()));
 			sendNotification(notif);
 			SharedChannelGroup.getInstance().write(json);
 		} catch (Exception e) {
@@ -103,6 +111,20 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 		} finally {
 			scheduler.schedule(this, period, TimeUnit.MILLISECONDS);
 		}
+	}
+	
+	public EnumMap<Thread.State, AtomicInteger> getThreadStates() {
+		EnumMap<Thread.State, AtomicInteger> map = new EnumMap<State, AtomicInteger>(Thread.State.class);
+		for(ThreadInfo ti : threadMxBean.getThreadInfo(threadMxBean.getAllThreadIds())) {
+			State st = ti.getThreadState();
+			AtomicInteger ai = map.get(st);
+			if(ai==null) {
+				ai = new AtomicInteger(0);
+				map.put(st, ai);
+			}
+			ai.incrementAndGet();
+		}
+		return map;
 	}
 
 	/**
