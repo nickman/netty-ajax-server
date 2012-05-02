@@ -167,7 +167,19 @@ div.chartplaceholder {
 	border-top:1px solid #e5eff8;
 	border-right:1px solid #e5eff8;
  	border-collapse:collapse;
+ 	position:relative;
 }
 
 table.legend {
+}
+
+div.chartTitle {
+	position: absolute;
+	right:30%;
+	overflow: inherit;
+	font-size-adjust: inherit;
+	font-size: smaller;
+	font-stretch: ultra-condensed;
+	font-weight: bold;
+	overflow-x: hidden;
 }

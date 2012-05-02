@@ -381,23 +381,20 @@
 	}
 
 	function addCharts() {
-		var cm = new ChartManager({		
+		var activeThreadsChart = new ChartManager({		
 			dataKeys: ['threadPools.worker.activeThreads', 'threadPools.boss.activeThreads'],
 			labels: ["Worker", "Boss"],
-			title: "ThreadPoolActiveThreads",
-			divCss: {width:300, height:300},
-			options: {
-				legend: { show: true },
-				xaxis: {mode: "time", timeformat: "%M:%S"}, 
-				series: { 
-					lines: { show: true }, 
-					points: { show: true }
-				},
-				legend: { show: true }
-			}
+			title: "Thread Pool Active Threads"
+		});		
+		addDataListener(activeThreadsChart);
+		var completedTasksChart = new ChartManager({		
+			dataKeys: ['threadPools.worker.completedTasks', 'threadPools.boss.completedTasks'],
+			labels: ["Worker", "Boss"],
+			title: "Thread Pool Completed Tasks"
 		});
-		addDataListener(cm);
+		addDataListener(completedTasksChart);
 	}
+	
 
 
 	var ChartManager = Class.create({
@@ -405,7 +402,11 @@
 			var cm = this;
 			var display = $('#displayChart');
 			$.each(props, function(key, value) {
-				cm[key] = value;
+				if($.isPlainObject(value)) {
+					$.extend(cm[key], value);
+				} else {
+					cm[key] = value;
+				}
 			});
 			cm.jkey = cm.title.replace(/ /g, '');
 			cm.dataSpec = [];
@@ -428,31 +429,47 @@
         		p.setupGrid();
         		p.draw();
         	}});
-        	cm.placeHolder.insert($("<div>" + cm.title + "</div>"));
+        	$('#' + cm.jkey).prepend($('<div align="middle" class="chartTitle">' + cm.title + '</div>'))
+        	if(cm.seriesSize==null) {
+        		cm.seriesSize=20;
+        	}
 		},
 		dataKeys: [],
 		labels:[],
 		dataArrays: {},
 		title: '',
 		jkey: '',
+		seriesSize: null,
 		dataSpec: [],
-		divCss: {}, 
-		options: {},
+		divCss:  {width:250, height:150}, 
+		options: {
+			legend: { show: true, noColumns: 1, labelFormatter: this.labelFormatter, backgroundOpacity: 0.4 },
+			xaxis: {mode: "time", timeformat: "%M:%S"}, 
+			series: { 
+				lines: { show: true }, 
+				points: { show: true }
+			}
+		},
 		placeHolder: null,
 		plot: null,		
 	    onData: function(v, ts, dataKey) {
-	        //console.info('[%s]:%s', dataKey, v);
 	        this.dataArrays[dataKey].push([ts, v]);
 	    },
 	    onComplete: function() {
-	        	var newData = [];
-	        	$.each(this.dataArrays, function(key, array){
-	        		newData.push(array);
-	        	});
-	        	this.plot.setData(this.dataSpec);
-	        	this.plot.setupGrid();
-	        	this.plot.draw();
+	    	var maxSize = this.seriesSize;
+        	$.each(this.dataArrays, function(key, array){
+        		if(array.length>maxSize) {
+        			array.shift();
+        		}
+        	});
+        	this.plot.setData(this.dataSpec);
+        	this.plot.setupGrid();
+        	this.plot.draw();
 	            	
-	    } 
+	    },
+	    labelFormatter: function (label, series) {
+	    	return '<a href="#' + label + '">' + label + '</a>';
+	    }
+
 	}); 
 	
