@@ -107,6 +107,7 @@
 		}
 //		$("#gridMaskInput").val($.cookie('metric_browser.gridMaskInput') || "");	
 //		$.cookie('metric_browser.gridMaskInput', expr, { expires: 365 });
+		addCharts();
 	});
 	/**
 	 * Turns the busy indicator on
@@ -277,7 +278,7 @@
 	 * @returns {String} The rendered string
 	 */
 	function formatJson(json) {
-		var row = '<table border="1"><tr><td>'  + $.format.date(new Date(), "MM/dd/yy hh:mm:ss") + '</td>';
+		var row = '<table border="1" class="rawdata"><tr><td>'  + $.format.date(new Date(), "MM/dd/yy hh:mm:ss") + '</td>';
 		$.each(json, function(k,v){
 			row += '<td><b>' + k + '</b>:&nbsp;' + addCommas(v) + '</td>';
 		});
@@ -378,31 +379,62 @@
 	        context.pop();
 	    });
 	}
-	
+
+	function addCharts() {
+		var cm = new ChartManager({		
+			dataKeys: ['threadPools.worker.activeThreads', 'threadPools.boss.activeThreads'],
+			labels: ["Worker", "Boss"],
+			title: "ThreadPoolActiveThreads",
+			divCss: {width:300, height:300},
+			options: {
+				legend: { show: true },
+				xaxis: {mode: "time", timeformat: "%M:%S"}, 
+				series: { 
+					lines: { show: true }, 
+					points: { show: true }
+				},
+				legend: { show: true }
+			}
+		});
+		addDataListener(cm);
+	}
 
 
 	var ChartManager = Class.create({
 		init: function(props){
 			var cm = this;
+			var display = $('#displayChart');
 			$.each(props, function(key, value) {
 				cm[key] = value;
 			});
+			cm.jkey = cm.title.replace(/ /g, '');
 			cm.dataSpec = [];
 			$.each(cm.labels, function(index, value) {
 				var dataArr = [];
 				cm.dataSpec.push({label: value, data: dataArr});
 				cm.dataArrays[cm.dataKeys[index]] = dataArr;
 			});
-			cm.placeHolder = $('<div id="' + cm.title + '"></div>');
+			cm.placeHolder = $('<div id="' + cm.jkey + '" class="chartplaceholder"></div>');
+			
+			display.append(cm.placeHolder);
+			//$('#main').append(cm.placeHolder);
 			$.each(cm.divCss, function(key, value) {
-				cm.placeHolder.css(key, value);
+				cm.placeHolder.css(key, value);				
 			});
-					
+			cm.plot = $.plot($('#' + cm.jkey), cm.dataSpec, cm.options);				
+			var p = cm.plot;
+        	cm.placeHolder.draggable().resizable({ resize: function(event, ui){
+        		p.resize();
+        		p.setupGrid();
+        		p.draw();
+        	}});
+        	cm.placeHolder.insert($("<div>" + cm.title + "</div>"));
 		},
 		dataKeys: [],
 		labels:[],
 		dataArrays: {},
 		title: '',
+		jkey: '',
 		dataSpec: [],
 		divCss: {}, 
 		options: {},
@@ -413,40 +445,14 @@
 	        this.dataArrays[dataKey].push([ts, v]);
 	    },
 	    onComplete: function() {
-	        if(this.plot==null) {
-	        	$('#displayChart').append(this.placeHolder);	
-	        	this.plot = $.plot(this.placeHolder, this.dataSpec, this.options);
-	        	var p = this.plot;
-	        	this.placeHolder.draggable().resizable({ resize: function(event, ui){
-	        		p.resize();
-	        		p.setupGrid();
-	        		p.draw();
-	        	}});	        	
-	        } else {
-//	        	this.plot = $.plot(this.placeHolder, this.dataSpec, this.options);
 	        	var newData = [];
 	        	$.each(this.dataArrays, function(key, array){
 	        		newData.push(array);
 	        	});
-	        	this.plot.setData(newData);
+	        	this.plot.setData(this.dataSpec);
 	        	this.plot.setupGrid();
 	        	this.plot.draw();
-	        }	    	
+	            	
 	    } 
 	}); 
-	var cm = new ChartManager({		
-		dataKeys: ['threadPools.worker.activeThreads', 'threadPools.boss.activeThreads'],
-		labels: ["Worker", "Boss"],
-		title: "ThreadPoolActiveThreads",
-		divCss: {width:150, height:150},
-		options: {
-			xaxis: {mode: "time", timeformat: "%M:%S"}, 
-			series: { 
-				lines: { show: true }, 
-				points: { show: true }
-			},
-			legend: { show: true }
-		}
-	});
-	addDataListener(cm);
 	

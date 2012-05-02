@@ -47,7 +47,7 @@ img {
 	border:0;
 	margin-top:.5em;
 	}	
-table {
+table.rawdata {
 	width:90%;
 	margin-bottom:0;
 	margin-top:0;
@@ -133,8 +133,8 @@ strong.err-msg {
 
 div.output-content {
 	display:block;
-	width: 70%;
-	height: 50%;
+	width: 90%;
+	height: 70%;
 	position:relative;
 	left:10px;
 	top:20px;
@@ -160,4 +160,14 @@ div.chart {
 
 h3.pushtypesel {
 	font-style: italic;
+}
+
+div.chartplaceholder {
+	border: medium;
+	border-top:1px solid #e5eff8;
+	border-right:1px solid #e5eff8;
+ 	border-collapse:collapse;
+}
+
+table.legend {
 }
