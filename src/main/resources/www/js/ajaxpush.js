@@ -243,6 +243,7 @@
 		}; 
 		ws.onmessage = function(msg) {			
 			var json = $.parseJSON(msg.data);
+			console.dir(json)
 			on(json);
 		}; 
 	}
@@ -399,12 +400,14 @@
 			title: "Thread Pool Completed Tasks"
 		});
 		addDataListener(completedTasksChart);
+		
 		var nioBuffersChart = new LineChart({		
 			dataKeys: ['direct-nio.Count'],
 			labels: ["Count"],
 			title: "Direct NIO Buffer Count"
 		});
 		addDataListener(nioBuffersChart);
+		
 		var nioMemoryChart = new LineChart({		
 			dataKeys: ['direct-nio.MemoryUsed', 'direct-nio.TotalCapacity'],
 			labels: ["MemoryUsed", "TotalCapacity"],
@@ -417,6 +420,21 @@
 			title: "Thread States"
 		});
 		addDataListener(threadStatesChart);
+		
+		
+		var heapMemoryChart = new LineChart({		
+			dataKeys: ['heap.used%', 'heap.capacity%'],
+			labels: ["HeapUsed%", "HeapCapacity%"],
+			title: "Heap Memory Usage"
+		});
+		addDataListener(heapMemoryChart);
+
+		var nonHeapMemoryChart = new LineChart({		
+			dataKeys: ['non-heap.used%', 'non-heap.capacity%'],
+			labels: ["NonHeapUsed%", "NonHeapCapacity%"],
+			title: "Non Heap Memory Usage"
+		});
+		addDataListener(nonHeapMemoryChart);
 		
 	}
 	
@@ -454,7 +472,7 @@
 			cm.plot = $.plot($('#' + cm.jkey), cm.dataSpec, cm.options);
 			cm.decoratePlaceHolder();
         	if(cm.seriesSize==null) {
-        		cm.seriesSize=20;
+        		cm.seriesSize=120;
         	}
 		},
 		dataKeys: [],

@@ -27,11 +27,11 @@ package org.helios.netty.jmx;
 import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -50,6 +50,7 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 
 import org.helios.netty.ajax.SharedChannelGroup;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -117,8 +118,8 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 			final JSONObject json = new JSONObject();
 			notif.setUserData(json);
 			json.put("ts", System.currentTimeMillis()); 
-			json.put("heap", new JSONObject(memMxBean.getHeapMemoryUsage()));
-			json.put("non-heap", new JSONObject(memMxBean.getNonHeapMemoryUsage()));	
+			json.put("heap", processMemoryUsage(memMxBean.getHeapMemoryUsage()));
+			json.put("non-heap", processMemoryUsage(memMxBean.getNonHeapMemoryUsage()));	
 			json.put("thread-states*", new JSONObject(getThreadStates()));
 			if(haveNioMXBean) {
 				json.put("direct-nio", new JSONObject(getNio()));				
@@ -130,6 +131,21 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 		} finally {
 			scheduler.schedule(this, period, TimeUnit.MILLISECONDS);
 		}
+	}
+	
+	protected JSONObject processMemoryUsage(MemoryUsage usage) throws JSONException {
+		JSONObject json = new JSONObject(usage);
+		json.put("used%", calcPercent(usage.getUsed(), usage.getCommitted()));
+		json.put("capacity%", calcPercent(usage.getUsed(), usage.getCommitted()));		
+		return json;
+	}
+	
+	
+	
+	protected long calcPercent(double part, double whole) {
+		if(part<1 || whole<1) return 0L;
+		double d = part/whole*100;
+		return (long)d;
 	}
 	
 	protected void extractMetricNames(JSONObject json) {
