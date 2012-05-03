@@ -26,7 +26,9 @@ package org.helios.netty.jmx;
 
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -58,7 +60,10 @@ public class ThreadPoolFactory extends ThreadPoolExecutor implements MetricProvi
 	protected static final JSONObject threadingMetrics = new JSONObject();
 	/** This pool's threading metrics json object */
 	protected final Map<String, Number> poolMetrics = new HashMap<String, Number>();
-	
+	/** The supplied metric names */
+	protected final Set<String> metricNames = new HashSet<String>();
+	/** The metric points */
+	protected final String[] points = new String[]{"activeThreads", "poolSize", "largestPoolSize", "completedTasks"};
 	/**
 	 * Creates a new ThreadPool
 	 * @param domain The JMX domain where the MBean will be published 
@@ -83,6 +88,10 @@ public class ThreadPoolFactory extends ThreadPoolExecutor implements MetricProvi
 			ManagementFactory.getPlatformMBeanServer().registerMBean(this, objectName);
 			threadingMetrics.put(name, poolMetrics);
 			ManagementFactory.getPlatformMBeanServer().addNotificationListener(MetricCollector.OBJECT_NAME, this, this, null);
+			String prefix = "threadPools~" + name + "~";
+			for(String s: points) {
+				metricNames.add(prefix + s);
+			}
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to register management interface for pool [" + domain + "/" + name + "]", e);
 		}
@@ -115,6 +124,15 @@ public class ThreadPoolFactory extends ThreadPoolExecutor implements MetricProvi
 		poolMetrics.put("poolSize", this.getPoolSize());
 		poolMetrics.put("largestPoolSize", this.getLargestPoolSize());
 		poolMetrics.put("completedTasks", this.getCompletedTaskCount());		
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see org.helios.netty.jmx.MetricProvider#getProvidedMetricNames()
+	 */
+	@Override
+	public Set<String> getProvidedMetricNames() {
+		return metricNames;
 	}
 
 	/**

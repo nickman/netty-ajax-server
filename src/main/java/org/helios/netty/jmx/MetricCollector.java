@@ -30,6 +30,11 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -38,6 +43,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.management.Attribute;
+import javax.management.AttributeList;
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
@@ -57,7 +64,13 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	public static final MemoryMXBean memMxBean = ManagementFactory.getMemoryMXBean();
 	/** The thread mx bean */
 	public static final ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
+	/** The NIO Direct MXBean ObjectName */
+	public static final ObjectName directNio = JMXHelper.objectName("java.nio:type=BufferPool,name=direct");
 	
+	/** The NIO attributes we are interested in */
+	public static final String[] NIO_ATTRS = new String[]{"Count", "MemoryUsed", "TotalCapacity"};
+	/** Indicates if we have the NIO MXBean */
+	protected final boolean haveNioMXBean;
 	/** The period between collections */
 	protected long period = 5000;
 	/** Serial number factory for thread names */
@@ -66,7 +79,9 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	protected final AtomicLong tick = new AtomicLong(0);
 	/** The ObjectName for the metric collector */
 	public static final ObjectName OBJECT_NAME = JMXHelper.objectName("org.helios.netty.jmx:service=MetricCollector");
-	
+	/** A set of the unique metric names */
+	protected final Set<String> metricNames = new CopyOnWriteArraySet<String>();
+
 	/** The schedule handle */
 	protected ScheduledFuture<?> handle = null;
 	/** The scheduler */
@@ -74,6 +89,7 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	
 	public MetricCollector(long period) {
 		super();
+		haveNioMXBean = ManagementFactory.getPlatformMBeanServer().isRegistered(directNio);
 		this.period = period;
 		try {			
 			ManagementFactory.getPlatformMBeanServer().registerMBean(this, OBJECT_NAME);
@@ -104,6 +120,9 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 			json.put("heap", new JSONObject(memMxBean.getHeapMemoryUsage()));
 			json.put("non-heap", new JSONObject(memMxBean.getNonHeapMemoryUsage()));	
 			json.put("thread-states*", new JSONObject(getThreadStates()));
+			if(haveNioMXBean) {
+				json.put("direct-nio", new JSONObject(getNio()));				
+			}
 			sendNotification(notif);
 			SharedChannelGroup.getInstance().write(json);
 		} catch (Exception e) {
@@ -113,6 +132,31 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 		}
 	}
 	
+	protected void extractMetricNames(JSONObject json) {
+		
+	}
+	
+	/**
+	 * Returns a simple map of NIO metrics
+	 * @return a simple map of NIO metrics
+	 */
+	protected Map<String, Long> getNio() {
+		Map<String, Long> map = new HashMap<String, Long>(NIO_ATTRS.length);
+		try {
+			AttributeList attrs = ManagementFactory.getPlatformMBeanServer().getAttributes(directNio, NIO_ATTRS);
+			for(Attribute attr: attrs.asList()) {
+				map.put(attr.getName(), (Long)attr.getValue());
+			}
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return map;
+	}
+	
+	/**
+	 * Collects the number of threads in each thread state
+	 * @return an EnumMap with Thread states as the key and the number of threads in that state as the value
+	 */
 	public EnumMap<Thread.State, AtomicInteger> getThreadStates() {
 		EnumMap<Thread.State, AtomicInteger> map = new EnumMap<State, AtomicInteger>(Thread.State.class);
 		for(ThreadInfo ti : threadMxBean.getThreadInfo(threadMxBean.getAllThreadIds())) {

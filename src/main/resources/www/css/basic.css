@@ -170,7 +170,28 @@ div.chartplaceholder {
 	border-left:1px solid #0E5491;
  	border-collapse:collapse;
  	position:relative;
+ 	
 }
+
+ul.mtree {
+	position:absolute; 
+	top:0; 
+	right:0px;
+	border: medium;
+	border-top:1px solid #0E5491;
+	border-bottom:1px solid #0E5491;
+	border-right:1px solid #0E5491;
+	border-left:1px solid #0E5491;
+ 	border-collapse:collapse;
+}
+
+.chartClose {
+	position:absolute; 
+	top:0; 
+	right:0px;
+	z-index: 99999;
+}
+
 
 table.legend {
 }

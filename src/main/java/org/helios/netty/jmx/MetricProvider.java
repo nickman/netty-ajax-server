@@ -24,6 +24,8 @@
  */
 package org.helios.netty.jmx;
 
+import java.util.Set;
+
 import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 
@@ -39,5 +41,14 @@ import org.json.JSONObject;
 public interface MetricProvider extends NotificationListener, NotificationFilter {
 	/** The notification type for a metric collection */
 	public static final String METRIC_NOTIFICATION = "metric.request"; 
+	/**
+	 * Writes the provided metric instances into the passed {@link JSONObject}
+	 * @param json The {@link JSONObject} to write the metrics into
+	 */
 	public void addMetrics(JSONObject json);
+	/**
+	 * Returns a set of the fully qualified metric names provided by this provider
+	 * @return a set of the fully qualified metric names provided by this provider
+	 */
+	public Set<String> getProvidedMetricNames();
 }

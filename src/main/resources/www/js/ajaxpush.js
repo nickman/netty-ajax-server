@@ -10,6 +10,8 @@
 	var chartPlots = {};
 	var lastData = null;
 	var dataListeners = {};
+	var seriesColours = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
+	
 	/**
 	 * Initializes the client
 	 */
@@ -105,8 +107,12 @@
 				}				
 			}
 		}
-//		$("#gridMaskInput").val($.cookie('metric_browser.gridMaskInput') || "");	
-//		$.cookie('metric_browser.gridMaskInput', expr, { expires: 365 });
+		$('.chartClose').live('click', function() {			
+			var chart = this.parentElement.id;
+			delete dataListeners[chart];
+			$('#' + chart).remove();
+		});
+		$('#metricTreeDiv').treeview();
 		addCharts();
 	});
 	/**
@@ -393,6 +399,18 @@
 			title: "Thread Pool Completed Tasks"
 		});
 		addDataListener(completedTasksChart);
+		var nioBuffersChart = new LineChart({		
+			dataKeys: ['direct-nio.Count'],
+			labels: ["Count"],
+			title: "Direct NIO Buffer Count"
+		});
+		addDataListener(nioBuffersChart);
+		var nioMemoryChart = new LineChart({		
+			dataKeys: ['direct-nio.MemoryUsed', 'direct-nio.TotalCapacity'],
+			labels: ["MemoryUsed", "TotalCapacity"],
+			title: "Direct NIO Memory Usage"
+		});
+		addDataListener(nioMemoryChart);
 		
 		var threadStatesChart = new PieChart({		
 			dataKeys: ['thread-states*'],
@@ -479,7 +497,11 @@
 	        		$.cookie(cm.jkey, cm.placeHolder.attr('style'), { expires: 365 });	        		
     			}
     		});
-			$('#' + cm.jkey).prepend($('<div align="middle" class="chartTitle">' + cm.title + '</div>'))			
+			
+			$('#' + cm.jkey).prepend($('<div align="middle" class="chartTitle">' + cm.title + '</div>'));			
+			$('#' + cm.jkey).prepend($('<div class="chartClose ui-icon ui-icon-circle-close"></div>'));
+			
+			
 		},
 	    onData: function(v, ts, dataKey) {
 	        this.dataArrays[dataKey].push([ts, v]);
@@ -519,8 +541,12 @@
 			});
 		},
 		onComplete: function() {
-			this.plot = $.plot($('#' + this.jkey), this.dataSpec, this.options);	
 			this.decoratePlaceHolder();
+			this.plot = $.plot($('#' + this.jkey), this.dataSpec, this.options);
+			$('#' + this.jkey).removeClass('resizable');
+			$('#' + this.jkey).removeData('resizable');
+			$('#' + this.jkey).resizable();
+			$('#' + this.jkey).prepend($('<div align="middle" class="chartTitle">' + this.title + '</div>'));
 		}
 	}); 
 	
