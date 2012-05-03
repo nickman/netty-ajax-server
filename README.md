@@ -9,3 +9,8 @@ The following push protocols are implemented:
  * HTTP Streaming
  * WebSockets
 
+Screenshot
+==========
+
+![Netty Ajax Push Server][1]
+[1]: https://github.com/nickman/netty-ajax-server/raw/master/images/netty-ajax.png?raw=true "Helios"
