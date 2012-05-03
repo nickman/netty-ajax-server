@@ -135,8 +135,8 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	
 	protected JSONObject processMemoryUsage(MemoryUsage usage) throws JSONException {
 		JSONObject json = new JSONObject(usage);
-		json.put("used%", calcPercent(usage.getUsed(), usage.getCommitted()));
-		json.put("capacity%", calcPercent(usage.getUsed(), usage.getCommitted()));		
+		json.put("usedperc", calcPercent(usage.getUsed(), usage.getCommitted()));
+		json.put("capacityperc", calcPercent(usage.getUsed(), usage.getMax()));		
 		return json;
 	}
 	

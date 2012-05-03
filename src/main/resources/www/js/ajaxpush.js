@@ -401,19 +401,19 @@
 		});
 		addDataListener(completedTasksChart);
 		
-		var nioBuffersChart = new LineChart({		
-			dataKeys: ['direct-nio.Count'],
-			labels: ["Count"],
-			title: "Direct NIO Buffer Count"
-		});
-		addDataListener(nioBuffersChart);
-		
-		var nioMemoryChart = new LineChart({		
-			dataKeys: ['direct-nio.MemoryUsed', 'direct-nio.TotalCapacity'],
-			labels: ["MemoryUsed", "TotalCapacity"],
-			title: "Direct NIO Memory Usage"
-		});
-		addDataListener(nioMemoryChart);
+//		var nioBuffersChart = new LineChart({		
+//			dataKeys: ['direct-nio.Count'],
+//			labels: ["Count"],
+//			title: "Direct NIO Buffer Count"
+//		});
+//		addDataListener(nioBuffersChart);
+//		
+//		var nioMemoryChart = new LineChart({		
+//			dataKeys: ['direct-nio.MemoryUsed', 'direct-nio.TotalCapacity'],
+//			labels: ["MemoryUsed", "TotalCapacity"],
+//			title: "Direct NIO Memory Usage"
+//		});
+//		addDataListener(nioMemoryChart);
 		
 		var threadStatesChart = new PieChart({		
 			dataKeys: ['thread-states*'],
@@ -423,14 +423,14 @@
 		
 		
 		var heapMemoryChart = new LineChart({		
-			dataKeys: ['heap.used%', 'heap.capacity%'],
+			dataKeys: ['heap.usedperc', 'heap.capacityperc'],
 			labels: ["HeapUsed%", "HeapCapacity%"],
 			title: "Heap Memory Usage"
 		});
 		addDataListener(heapMemoryChart);
 
 		var nonHeapMemoryChart = new LineChart({		
-			dataKeys: ['non-heap.used%', 'non-heap.capacity%'],
+			dataKeys: ['non-heap.usedperc', 'non-heap.capacityperc'],
 			labels: ["NonHeapUsed%", "NonHeapCapacity%"],
 			title: "Non Heap Memory Usage"
 		});
@@ -565,6 +565,7 @@
 			$('#' + this.jkey).removeData('resizable');
 			$('#' + this.jkey).resizable();
 			$('#' + this.jkey).prepend($('<div align="middle" class="chartTitle">' + this.title + '</div>'));
+			$('#' + this.jkey).prepend($('<div class="chartClose ui-icon ui-icon-circle-close"></div>'));
 		}
 	}); 
 	
