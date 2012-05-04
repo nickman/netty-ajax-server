@@ -109,6 +109,25 @@
 			$('#' + chart).remove();
 		});
 		$('#metricTreeDiv').treeview();
+		$.getJSON('/metricnames', function(data) {
+				var arr = data['metric-names'];
+				$.each(arr, function(index, value) {
+					console.info(value);
+					var segs = value.split('.');
+					var segCnt = segs.length-1;
+					var running = '';
+					$.each(value.split('.'), function(i, seg) {
+						// <li><span class="folder">Folder 1</span>
+						if(i==0) {
+							$('#metricTreeDiv').append('<li><span class="folder">' + seg + '</span>');
+						} else {
+							
+						}
+						
+					});
+				});
+			});
+		
 		addCharts();
 	});
 	/**
