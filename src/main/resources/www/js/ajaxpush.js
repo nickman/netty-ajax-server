@@ -45,10 +45,6 @@
 			$('#streamer_label').remove();
 			$('.stream').remove();
 		}
-		$('input[type="radio"][name="pushtype"]').bind('select', function(event) {
-			console.info("Radio Selected");
-			console.dir(event);
-		});
 		$('#controlButton').bind('click', function() {
 			if(running) {
 				stop();
@@ -276,7 +272,9 @@
 			if($('#displayRaw').children().size()>20) {
 				$('#displayRaw').children().first().remove();
 			}			
-			notifyListeners(data);
+			if(data.metrics!=null) {
+				notifyListeners(data.metrics);
+			}
 		}
 	}
 	/**

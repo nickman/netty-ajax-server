@@ -56,8 +56,17 @@ public class ServerPipelineFactory implements ChannelPipelineFactory {
 	 * Creates a new ServerPipelineFactory
 	 * @param modifierMap The modifier map
 	 */
-	public ServerPipelineFactory(Map<String, PipelineModifier> modifierMap) {
+	public ServerPipelineFactory(final Map<String, PipelineModifier> modifierMap) {
 		this.modifierMap = modifierMap;
+	}
+	
+	/**
+	 * Adds a modifier to the factory
+	 * @param name The URI that the modifier responds to
+	 * @param modifier The modifier to add
+	 */
+	public void addModifier(String name, PipelineModifier modifier) {
+		modifierMap.put(name, modifier);
 	}
 	
 	/**

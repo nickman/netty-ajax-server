@@ -55,7 +55,7 @@ public class DefaultChannelHandler extends SimpleChannelUpstreamHandler {
 	 * Creates a new DefaultChannelHandler
 	 * @param modifierMap The map of modifiers, keyed by the URI they accept.
 	 */
-	public DefaultChannelHandler(Map<String, PipelineModifier> modifierMap) {
+	public DefaultChannelHandler(final Map<String, PipelineModifier> modifierMap) {
 		this.modifierMap = modifierMap;		
 	}
 	

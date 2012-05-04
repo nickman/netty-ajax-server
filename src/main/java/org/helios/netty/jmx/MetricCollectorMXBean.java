@@ -32,5 +32,9 @@ package org.helios.netty.jmx;
  * <p><code>org.helios.netty.jmx.MetricCollectorMXBean</code></p>
  */
 public interface MetricCollectorMXBean {
-
+	/**
+	 * Returns a JSON string of all the registered metric names 
+	 * @return the metricNames
+	 */
+	public String getMetricNames();
 }

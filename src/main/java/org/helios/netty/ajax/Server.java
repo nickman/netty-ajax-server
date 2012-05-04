@@ -133,10 +133,12 @@ public class Server {
 		this.contentRoot = root;
 		HttpStaticFileServerHandler.contentRoot = root;
 		isock = new InetSocketAddress(iface, port);
-		new MetricCollector(5000);
+		MetricCollector collector = new MetricCollector(5000);
+		
 		bossPool = ThreadPoolFactory.newCachedThreadPool(getClass().getPackage().getName(), "boss");
 		workerPool =  ThreadPoolFactory.newCachedThreadPool(getClass().getPackage().getName(), "worker");
 		pipelineFactory = new ServerPipelineFactory(getPipelineModifiers());
+		((ServerPipelineFactory)pipelineFactory).addModifier(collector.getName(), collector);
 		channelFactory = new NioServerSocketChannelFactory(bossPool, workerPool);
 		bstrap = new ServerBootstrap(channelFactory);
 		bstrap.setPipelineFactory(pipelineFactory);

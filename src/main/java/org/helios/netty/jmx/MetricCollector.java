@@ -24,6 +24,10 @@
  */
 package org.helios.netty.jmx;
 
+import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.OK;
+import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+
 import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -49,7 +53,28 @@ import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 
+import org.helios.netty.ajax.PipelineModifier;
 import org.helios.netty.ajax.SharedChannelGroup;
+import org.helios.netty.ajax.handlergroups.longpoll.TimeoutChannel;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelDownstreamHandler;
+import org.jboss.netty.channel.ChannelEvent;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandler;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelUpstreamHandler;
+import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.DownstreamMessageEvent;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.util.CharsetUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,7 +85,8 @@ import org.json.JSONObject;
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
  * <p><code>org.helios.netty.jmx.MetricCollector</code></p>
  */
-public class MetricCollector extends NotificationBroadcasterSupport implements MetricCollectorMXBean, Runnable {
+
+public class MetricCollector extends NotificationBroadcasterSupport implements MetricCollectorMXBean, Runnable, PipelineModifier, ChannelDownstreamHandler, ChannelUpstreamHandler {
 	/** The memory mx bean */
 	public static final MemoryMXBean memMxBean = ManagementFactory.getMemoryMXBean();
 	/** The thread mx bean */
@@ -101,10 +127,31 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 					return t;
 				}
 			});
+			initMetricNames();
 			scheduler.schedule(this, period, TimeUnit.MILLISECONDS);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to create MetricCollector", e);
 		}
+	}
+	
+	/**
+	 * The MetricCollector is not a real MetricProvider, but it needs to supply the names of the metrics
+	 * it published, so we add them to the registry here.
+	 */
+	protected void initMetricNames() {
+		String[] memMetrics = new String[]{
+				"capacityperc", "committed", "init", "max", "used", "usedperc"
+		};
+		for(String m: memMetrics) {
+			metricNames.add("heap." + m);
+			metricNames.add("non-heap." + m);
+		}
+		if(haveNioMXBean) {
+			for(String s: NIO_ATTRS) {
+				metricNames.add("direct-nio." + s);
+			}
+		}
+		metricNames.add("thread-states*");
 	}
 	
 	/**
@@ -116,6 +163,8 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 		try {
 			Notification notif = new Notification(MetricProvider.METRIC_NOTIFICATION, OBJECT_NAME, tick.incrementAndGet(), System.currentTimeMillis());
 			final JSONObject json = new JSONObject();
+			final JSONObject envelope = new JSONObject();
+			envelope.put("metrics", json);
 			notif.setUserData(json);
 			json.put("ts", System.currentTimeMillis()); 
 			json.put("heap", processMemoryUsage(memMxBean.getHeapMemoryUsage()));
@@ -125,7 +174,7 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 				json.put("direct-nio", new JSONObject(getNio()));				
 			}
 			sendNotification(notif);
-			SharedChannelGroup.getInstance().write(json);
+			SharedChannelGroup.getInstance().write(envelope);
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		} finally {
@@ -133,6 +182,15 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 		}
 	}
 	
+	/**
+	 * Generates a {@link JSONObject} representing memory usage, plus the percentage usage of:<ul>
+	 * <li>Memory Allocated</li>
+	 * <li>Memory Maximum Capacity</li>
+	 * </ul>
+	 * @param usage The memory usage provided by the {@link MemoryMXBean}
+	 * @return A {@link JSONObject} 
+	 * @throws JSONException I have no idea why this would be thrown
+	 */
 	protected JSONObject processMemoryUsage(MemoryUsage usage) throws JSONException {
 		JSONObject json = new JSONObject(usage);
 		json.put("usedperc", calcPercent(usage.getUsed(), usage.getCommitted()));
@@ -140,17 +198,50 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 		return json;
 	}
 	
+	/**
+	 * Returns a JSONArray of all the registered metric names 
+	 * @return the metricNames
+	 */
+	public JSONObject getMetricNamesJSON() {
+		JSONArray arr = new JSONArray(metricNames);
+		JSONObject mn = new JSONObject();
+		try {
+			mn.put("metric-names", arr);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return mn;
+	}
+	
+	/**
+	 * Returns a JSON string of all the registered metric names 
+	 * @return the metricNames
+	 */
+	public String getMetricNames() {
+		JSONArray arr = new JSONArray(metricNames);
+		JSONObject mn = new JSONObject();
+		try {
+			mn.put("metric-names", arr);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return mn.toString();
+	}
 	
 	
+	
+	/**
+	 * Simple percentage calculator
+	 * @param part The part value
+	 * @param whole The whole value
+	 * @return The percentage that the part is of the whole as a long
+	 */
 	protected long calcPercent(double part, double whole) {
 		if(part<1 || whole<1) return 0L;
 		double d = part/whole*100;
 		return (long)d;
 	}
 	
-	protected void extractMetricNames(JSONObject json) {
-		
-	}
 	
 	/**
 	 * Returns a simple map of NIO metrics
@@ -202,4 +293,80 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	public void setPeriod(long period) {
 		this.period = period;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see org.helios.netty.ajax.PipelineModifier#modifyPipeline(org.jboss.netty.channel.ChannelPipeline)
+	 */
+	@Override
+	public void modifyPipeline(ChannelPipeline pipeline) {
+		if(pipeline.get("metricnames")==null) {
+			pipeline.addLast("metricnames", this);
+		}		
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see org.helios.netty.ajax.PipelineModifier#getName()
+	 */
+	@Override
+	public String getName() {
+		return "metricnames";
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see org.helios.netty.ajax.PipelineModifier#getChannelHandler()
+	 */
+	@Override
+	public ChannelHandler getChannelHandler() {
+		return this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see org.jboss.netty.channel.ChannelDownstreamHandler#handleDownstream(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.ChannelEvent)
+	 */
+	@Override
+	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+		final Channel channel = e.getChannel();
+		if(!channel.isOpen()) return;
+		if(!(e instanceof MessageEvent)) {
+            ctx.sendDownstream(e);
+            return;
+        }
+		Object message = ((MessageEvent)e).getMessage();
+		if(!(message instanceof JSONObject) && !(message instanceof CharSequence)) {
+            ctx.sendDownstream(e);
+            return;			
+		}
+		
+		HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
+		response.setContent(ChannelBuffers.copiedBuffer("\n" + message.toString() + "\n", CharsetUtil.UTF_8));
+		response.setHeader(CONTENT_TYPE, "application/json");
+		ChannelFuture cf = Channels.future(channel);
+		cf.addListener(new ChannelFutureListener(){
+			public void operationComplete(ChannelFuture f) throws Exception {
+				channel.close();
+			}
+		});
+		ctx.sendDownstream(new DownstreamMessageEvent(channel, cf, response, channel.getRemoteAddress()));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see org.jboss.netty.channel.ChannelUpstreamHandler#handleUpstream(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.ChannelEvent)
+	 */
+	@Override
+	public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+		if(e instanceof MessageEvent) {
+			Object msg = ((MessageEvent)e).getMessage();
+			if(msg instanceof HttpRequest) {
+				//ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), Channels.future(e.getChannel()), getMetricNamesJSON(), ((MessageEvent) e).getRemoteAddress()));
+				e.getChannel().write(getMetricNamesJSON());
+			}
+		}
+		ctx.sendUpstream(e);
+	}
+
 }
