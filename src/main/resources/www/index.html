@@ -12,7 +12,7 @@
 		<script type="text/javascript" src="js/jquery.cookie.js"></script>
 		<script type="text/javascript" src="js/jquery.metadata.js"></script>
 		<script type="text/javascript" src="js/Class-0.0.2.min.js"></script>
-		<script type="text/javascript" src="tree/jquery.treeview.js"></script>
+		<script type="text/javascript" src="dynatree/jquery.dynatree.min.js"></script>
 		
 		<script type="text/javascript" src="flot/jquery.flot.js"></script>
 		<script type="text/javascript" src="flot/jquery.flot.pie.js"></script>
@@ -26,7 +26,8 @@
 		
 		<link type="text/css" href="css/basic.css" rel="stylesheet" media="all"/>
 		<link type="text/css" href="ui/css/cupertino/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
-		<link type="text/css" href="tree/jquery.treeview.css" rel="stylesheet" />
+		
+		<link type='text/css' href='dynatree/skin/ui.dynatree.css' rel='stylesheet'>	
 			
 	</head>
 	<body id="main">
@@ -65,9 +66,19 @@
     		</div>
     		
 		</div>
-		<ul id="metricTreeDiv" class="mtree">
-			<li><span class="folder">Metrics Dictionary</span></li>
-		</ul>
+		
+
+			<ul id="metricTreeUl" class="mtree" > 
+				<li><span id="metricTreeToggler" class="folder">Metrics Dictionary</span></li>
+				<li id="metricTreeLi">
+					<div id="metricTreeDiv"></div>
+					<button id="chartBtn">Chart It</button>
+					<button id="chartClearSelBtn">Clear Sel</button>	
+					<button id="chartRevSelBtn">Rev Sel</button>
+				</li>			
+			</ul>
+		
+		
 		<div id="controls" class="controlx">
 			<button id="controlButton">Start</button>
 			<button id="clearButton">Clear</button>

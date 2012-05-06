@@ -173,7 +173,7 @@ div.chartplaceholder {
  	
 }
 
-ul.mtree {
+.mtree {
 	position:absolute; 
 	top:0; 
 	right:0px;
@@ -183,6 +183,7 @@ ul.mtree {
 	border-right:1px solid #0E5491;
 	border-left:1px solid #0E5491;
  	border-collapse:collapse;
+ 	z-index: 99999;
 }
 
 .chartClose {

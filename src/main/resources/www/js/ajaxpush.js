@@ -11,7 +11,8 @@
 	var lastData = null;
 	var dataListeners = {};
 	var seriesColours = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
-	
+	var tree = null;
+	var rootNode = null;
 	/**
 	 * Initializes the client
 	 */
@@ -75,6 +76,59 @@
 			}
 			$.cookie('ajax.push.format', outputChart, { expires: 365 });
 		});
+		// =====================================
+		//		Initialize Tree
+		// =====================================
+		$('#metricTreeDiv').dynatree({
+			selectMode: 2,
+			checkbox: true
+		});
+		tree = $('#metricTreeDiv').dynatree("getTree") 
+		rootNode = $("#metricTreeDiv").dynatree("getRoot");
+		$.getJSON('/metricnames', function(data) {
+				var arr = data['metric-names'];
+				$.each(arr, function(index, value) {					
+					var segs = value.split('.');
+					var segCnt = segs.length-1;
+					var running = '';
+					var currentNode = null;
+					$.each(value.split('.'), function(i, seg) {
+						if(currentNode==null) {
+							currentNode = rootNode;
+						} else {
+							currentNode = tree.getNodeByKey(running);
+						}
+						running += ((i>0 ? '.' : '') + seg);
+						if(tree.getNodeByKey(running)==null) {
+							console.info("Adding Tree Node [%s] with Key [%s]", seg, running);
+							currentNode.addChild({
+						        title: seg,
+						        key: running,
+						        isFolder: (i!=segCnt)
+						    });
+						}
+					});
+				});
+			});
+		// =====================================		
+		$('#metricTreeUl').draggable()
+		$('#metricTreeToggler').bind('click', function(){
+			$('#metricTreeLi').toggle();
+		});
+		$('#chartBtn').bind('click', function(){
+			console.info("Adding Chart....")
+		});
+		$('#chartClearSelBtn').bind('click', function(){
+			console.info("Clearing Chart Selections....")
+		});
+		$('#chartRevSelBtn').bind('click', function(){
+			console.info("Reversing Chart Selections....")
+		});
+		
+		
+		
+		
+		
 		$("#displayChart").show();
 		
 		var savedPushType = $.cookie('ajax.push.pushtype');
@@ -108,27 +162,12 @@
 			delete dataListeners[chart];
 			$('#' + chart).remove();
 		});
-		$('#metricTreeDiv').treeview();
-		$.getJSON('/metricnames', function(data) {
-				var arr = data['metric-names'];
-				$.each(arr, function(index, value) {
-					console.info(value);
-					var segs = value.split('.');
-					var segCnt = segs.length-1;
-					var running = '';
-					$.each(value.split('.'), function(i, seg) {
-						// <li><span class="folder">Folder 1</span>
-						if(i==0) {
-							$('#metricTreeDiv').append('<li><span class="folder">' + seg + '</span>');
-						} else {
-							
-						}
-						
-					});
-				});
-			});
+		$('#chartBtn').bind('click', function(){
+			
+		});
+		//addCharts();
 		
-		addCharts();
+		
 	});
 	/**
 	 * Turns the busy indicator on
@@ -258,7 +297,6 @@
 		}; 
 		ws.onmessage = function(msg) {			
 			var json = $.parseJSON(msg.data);
-			console.dir(json)
 			on(json);
 		}; 
 	}
