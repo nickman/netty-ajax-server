@@ -13,6 +13,7 @@
 	var seriesColours = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
 	var tree = null;
 	var rootNode = null;
+	var treeVisible = true;
 	/**
 	 * Initializes the client
 	 */
@@ -88,22 +89,60 @@
 		$.getJSON('/metricnames', function(data) {
 				addToMetricTree(data['metric-names']);
 		});
-		// =====================================		
+		// =====================================	
+		
 		$('#metricTreeUl').draggable()
-		$('#metricTreeToggler').bind('click', function(){
-			$('#metricTreeLi').toggle();
+		$('#metricTreeToggleIcon').bind('click', function(){
+			treeVisible = !treeVisible;
+			console.info("Collapsed tree:[%s]", treeVisible);
+			$('#metricTreeLi').toggle(treeVisible);
+			$('#metricTreeToggleIcon').removeClass(treeVisible ? 'ui-icon-circle-triangle-e' : 'ui-icon-circle-triangle-s')
+			$('#metricTreeToggleIcon').addClass(treeVisible ? 'ui-icon-circle-triangle-s' : 'ui-icon-circle-triangle-e')
 		});
+		$('#metricTreeUl').css('right', '0px').css('position', 'absolute');
 		$('#chartBtn').bind('click', function(){
-			$('#chart-dialog').toggle().dialog({modal: true});
+			$('#chart-dialog').dialog({modal: true});
+			var selected = [];
+			$.each($("#metricTreeDiv").dynatree("getSelectedNodes"), function(index, node) {
+				selected.push(node.data.key);				
+			} );
+			$("#dlg-metrics-ids").text(selected.join('\n'));
+			
 		});
 		$('#chartClearSelBtn').bind('click', function(){
-			console.info("Clearing Chart Selections....")
+			$.each($("#metricTreeDiv").dynatree("getSelectedNodes"), function(index, node) {
+				node.select(false);				
+			} );
 		});
 		$('#chartRefreshBtn').bind('click', function(){
-			console.info("Refreshing Metric Tree...")
+			rootNode.removeChildren();
+			$.getJSON('/metricnames', function(data) {
+				addToMetricTree(data['metric-names']);
+			});			
 		});
 		
-		
+		$('#addChartButton').bind('click', function(){
+			var chartType = $('#dlg-type').val();
+			var chartTitle = $('#dlg-name').val();
+			var chartSeries = $('#dlg-metrics-ids').text().split('\n');
+			var chartLabels = [];
+			var newChart = null;
+			if(chartType=='Line') {
+				$.each(chartSeries, function(index, value){
+					var arr = value.split('.');
+					chartLabels.push(arr[arr.length-1]);
+				});
+				
+				newChart = new LineChart({		
+					dataKeys: chartSeries,
+					labels: chartLabels,
+					title: chartTitle
+				});		
+				
+			}
+			addDataListener(newChart);
+			$('#chart-dialog').dialog('destroy');
+		});
 		
 		
 		
@@ -557,10 +596,12 @@
 			legend: { show: true, noColumns: 1, labelFormatter: this.labelFormatter, backgroundOpacity: 0.4 },
 			xaxis: {mode: "time", timeformat: "%M:%S"}, 
 			series: { 
+				hoverable: true,
 				lines: { show: true }, 
 				points: { show: true }
 			},
 			grid: {
+				hoverable: true,
 				borderColor: null,
 				borderWidth: 0
 			}

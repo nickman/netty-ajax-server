@@ -81,12 +81,12 @@
  -->
  
 			<div id="metricTreeUl" class="mtree" > 
-				<div><span id="metricTreeToggler">Metrics Dictionary</span></div>
+				<div style="display: inline-block;"><span id="metricTreeToggleIcon" class="ui-icon ui-icon-circle-triangle-s" style="display: inline-block;vertical-align:middle;" ></span><span style="display: inline-block;vertical-align:middle;" id="metricTreeToggler">Metrics Dictionary</span></div>
 				<div id="metricTreeLi">
 					<div id="metricTreeDiv"></div>
 					<button id="chartBtn">Chart It</button>
 					<button id="chartClearSelBtn">Clear Sel</button>	
-					<button id="chartRefreshBtn">Refreshl</button>
+					<button id="chartRefreshBtn">Refresh</button>
 				</div>			
 			</div>
  
@@ -124,22 +124,20 @@
 		
 		
 		<div id="chart-dialog" title="Create new chart">
-			<label for="name">Chart Title</label>
-			<input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" />
+			<label for="dlg-name">Chart Title</label>
+			<input type="text" name="name" id="dlg-name" class="text ui-widget-content ui-corner-all" />
 			<br></br>
-			<label for="type">Chart Type</label>
-			<select id="chartType">
-				<option>Line</option>
+			<label for="dlg-type">Chart Type</label>
+			<select id="dlg-type">
+				<option selected="selected" >Line</option>
 				<option>Pie</option>
 				<option>Cross-Tab</option>
 			</select>
 			<br></br>
-			<label for="metrics-ids">Metric IDs</label>
-			<input type="text" list="metrics-ids" multiple="multiple" name="metrics-ids" id="metrics-ids" class="text ui-widget-content ui-corner-all" />
+			<label for="dlg-metrics-ids">Metric IDs</label>
+			<textarea id="dlg-metrics-ids" contenteditable="false" style="overflow:auto;" rows="3" cols="20" class="text ui-widget-content ui-corner-all"></textarea>
 			<br>
-			<button id="addChartButton">Add Chart</button>
-			<button id="cancelChartButton">Cancel</button>
-			
+			<button id="addChartButton">Add Chart</button>				
 		</div>
 		
 		
