@@ -64,10 +64,9 @@
 					<div id="longpollbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>
 				</div>
     		</div>
-    		
 		</div>
 		
-
+<!-- 
 			<ul id="metricTreeUl" class="mtree" > 
 				<li><span id="metricTreeToggler" class="folder">Metrics Dictionary</span></li>
 				<li id="metricTreeLi">
@@ -77,6 +76,20 @@
 					<button id="chartRevSelBtn">Rev Sel</button>
 				</li>			
 			</ul>
+			
+			<span id="metricTreeIcon" class="ui-icon ui-icon-triangle-1-n">
+ -->
+ 
+			<div id="metricTreeUl" class="mtree" > 
+				<div><span id="metricTreeToggler">Metrics Dictionary</span></div>
+				<div id="metricTreeLi">
+					<div id="metricTreeDiv"></div>
+					<button id="chartBtn">Chart It</button>
+					<button id="chartClearSelBtn">Clear Sel</button>	
+					<button id="chartRefreshBtn">Refreshl</button>
+				</div>			
+			</div>
+ 
 		
 		
 		<div id="controls" class="controlx">
@@ -96,6 +109,7 @@
 			<div id="displayChart"></div>
 		</div>
 		
+		<div id="hidden-stuff" style="display:none;">
 		
 		<div class="err-msg">
 		    <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
@@ -107,6 +121,30 @@
 		        </p>
 		    </div>
 		</div>
+		
+		
+		<div id="chart-dialog" title="Create new chart">
+			<label for="name">Chart Title</label>
+			<input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" />
+			<br></br>
+			<label for="type">Chart Type</label>
+			<select id="chartType">
+				<option>Line</option>
+				<option>Pie</option>
+				<option>Cross-Tab</option>
+			</select>
+			<br></br>
+			<label for="metrics-ids">Metric IDs</label>
+			<input type="text" list="metrics-ids" multiple="multiple" name="metrics-ids" id="metrics-ids" class="text ui-widget-content ui-corner-all" />
+			<br>
+			<button id="addChartButton">Add Chart</button>
+			<button id="cancelChartButton">Cancel</button>
+			
+		</div>
+		
+		
+	</div>
+		
 	
 		
 	</body>

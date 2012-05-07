@@ -16,8 +16,8 @@
 	/**
 	 * Initializes the client
 	 */
-	$(function(){
-		$(".err-msg").hide();
+	$(function(){		
+	try {
 		$(".err-msg").css('width', '40%');	
 		$(".err-msg").bind('click', function() {
 			$(".err-msg").hide();
@@ -86,43 +86,21 @@
 		tree = $('#metricTreeDiv').dynatree("getTree") 
 		rootNode = $("#metricTreeDiv").dynatree("getRoot");
 		$.getJSON('/metricnames', function(data) {
-				var arr = data['metric-names'];
-				$.each(arr, function(index, value) {					
-					var segs = value.split('.');
-					var segCnt = segs.length-1;
-					var running = '';
-					var currentNode = null;
-					$.each(value.split('.'), function(i, seg) {
-						if(currentNode==null) {
-							currentNode = rootNode;
-						} else {
-							currentNode = tree.getNodeByKey(running);
-						}
-						running += ((i>0 ? '.' : '') + seg);
-						if(tree.getNodeByKey(running)==null) {
-							console.info("Adding Tree Node [%s] with Key [%s]", seg, running);
-							currentNode.addChild({
-						        title: seg,
-						        key: running,
-						        isFolder: (i!=segCnt)
-						    });
-						}
-					});
-				});
-			});
+				addToMetricTree(data['metric-names']);
+		});
 		// =====================================		
 		$('#metricTreeUl').draggable()
 		$('#metricTreeToggler').bind('click', function(){
 			$('#metricTreeLi').toggle();
 		});
 		$('#chartBtn').bind('click', function(){
-			console.info("Adding Chart....")
+			$('#chart-dialog').toggle().dialog({modal: true});
 		});
 		$('#chartClearSelBtn').bind('click', function(){
 			console.info("Clearing Chart Selections....")
 		});
-		$('#chartRevSelBtn').bind('click', function(){
-			console.info("Reversing Chart Selections....")
+		$('#chartRefreshBtn').bind('click', function(){
+			console.info("Refreshing Metric Tree...")
 		});
 		
 		
@@ -166,9 +144,40 @@
 			
 		});
 		//addCharts();
-		
-		
+	} catch (e) {
+		console.error(e);
+		console.dir(e);
+	}
 	});
+	
+	/**
+	 * Parses the passed json data array and updates the metric tree
+	 * @param arr An array of fully qualified metric names
+	 */
+	function addToMetricTree(arr) {
+		$.each(arr, function(index, value) {					
+			var segs = value.split('.');
+			var segCnt = segs.length-1;
+			var running = '';
+			var currentNode = null;
+			$.each(value.split('.'), function(i, seg) {
+				if(currentNode==null) {
+					currentNode = rootNode;
+				} else {
+					currentNode = tree.getNodeByKey(running);
+				}
+				running += ((i>0 ? '.' : '') + seg);
+				if(tree.getNodeByKey(running)==null) {
+					console.info("Adding Tree Node [%s] with Key [%s] Folder:[%s]", seg, running, (i!=segCnt));
+					currentNode.addChild({
+				        title: seg,
+				        key: running,
+				        isFolder: (i!=segCnt)
+				    });
+				}
+			});
+		});		
+	}
 	/**
 	 * Turns the busy indicator on
 	 */
@@ -331,6 +340,8 @@
 			}			
 			if(data.metrics!=null) {
 				notifyListeners(data.metrics);
+			} else if(data.metric-names != null){
+				addToMetricTree(data.metric-names);
 			}
 		}
 	}
@@ -440,6 +451,10 @@
 	        decompose(v, ts, context);       
 	        context.pop();
 	    });
+	}
+	
+	function newChartDialog() {
+		
 	}
 
 	function addCharts() {
