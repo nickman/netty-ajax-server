@@ -90,7 +90,7 @@ public class Server {
 	 * </ol>
 	 */
 	public static void main(String[] args) {
-		BasicConfigurator.configure();
+		//BasicConfigurator.configure();
 		InternalLoggerFactory.setDefaultFactory(new Log4JLoggerFactory());
 		String iface = null;
 		String root = null;

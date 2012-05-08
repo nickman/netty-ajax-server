@@ -48,6 +48,7 @@
 					<goals>deploy assembly:assembly</goals>
 				</configuration>
 			</plugin>
+			
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -60,6 +61,23 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+	            <artifactId>maven-assembly-plugin</artifactId>
+	            <configuration>
+	            	<finalName>netty-ajax-server</finalName>
+	                <archive>
+	                    <manifest>
+	                      <addClasspath>true</addClasspath>
+				          <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+				          <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>	                      
+	                      <mainClass>org.helios.netty.ajax.Server</mainClass>
+	                    </manifest>
+	                </archive>
+	                <descriptorRefs>
+	                    <descriptorRef>jar-with-dependencies</descriptorRef>
+	                </descriptorRefs>
+	            </configuration>
+	        </plugin>
 		</plugins>
 	</build>
 

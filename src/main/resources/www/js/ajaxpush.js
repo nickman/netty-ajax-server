@@ -81,7 +81,7 @@
 		//		Initialize Tree
 		// =====================================
 		$('#metricTreeDiv').dynatree({
-			selectMode: 2,
+			selectMode: 3,
 			checkbox: true
 		});
 		tree = $('#metricTreeDiv').dynatree("getTree") 
@@ -99,9 +99,10 @@
 			$('#metricTreeToggleIcon').removeClass(treeVisible ? 'ui-icon-circle-triangle-e' : 'ui-icon-circle-triangle-s')
 			$('#metricTreeToggleIcon').addClass(treeVisible ? 'ui-icon-circle-triangle-s' : 'ui-icon-circle-triangle-e')
 		});
-		$('#metricTreeUl').css('right', '0px').css('position', 'absolute');
+		$('#metricTreeUl').css('right', '0px').css('position', 'absolute');		 
 		$('#chartBtn').bind('click', function(){
 			$('#chart-dialog').dialog({modal: true});
+			$('#dlg-name').keydown(function(event) { if(event.keyCode==13) $('#addChartButton').click(); });
 			var selected = [];
 			$.each($("#metricTreeDiv").dynatree("getSelectedNodes"), function(index, node) {
 				selected.push(node.data.key);				
@@ -604,7 +605,8 @@
 				hoverable: true,
 				borderColor: null,
 				borderWidth: 0
-			}
+			},
+			crosshair: { mode: "x" }
 		},
 		placeHolder: null,
 		plot: null,	
