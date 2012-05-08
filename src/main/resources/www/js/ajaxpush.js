@@ -94,7 +94,7 @@
 		$('#metricTreeUl').draggable()
 		$('#metricTreeToggleIcon').bind('click', function(){
 			treeVisible = !treeVisible;
-			console.info("Collapsed tree:[%s]", treeVisible);
+			//console.info("Collapsed tree:[%s]", treeVisible);
 			$('#metricTreeLi').toggle(treeVisible);
 			$('#metricTreeToggleIcon').removeClass(treeVisible ? 'ui-icon-circle-triangle-e' : 'ui-icon-circle-triangle-s')
 			$('#metricTreeToggleIcon').addClass(treeVisible ? 'ui-icon-circle-triangle-s' : 'ui-icon-circle-triangle-e')
@@ -151,7 +151,7 @@
 		
 		var savedPushType = $.cookie('ajax.push.pushtype');
 		if(savedPushType!=null) {
-			console.info("Restored Last Push Type:" + savedPushType);
+			//console.info("Restored Last Push Type:" + savedPushType);
 			$('#' + savedPushType).attr("checked", "checked");
 			var ps = $('input[type="radio"][name="pushtype"][checked="checked"]');
 			if(ps.size()==1) {
@@ -162,7 +162,7 @@
 		var savedFormat = $.cookie('ajax.push.format');
 		if(savedFormat!=null) {
 			if(savedFormat) {
-				console.info("Restored Format. Chart:" + savedFormat);
+				//console.info("Restored Format. Chart:" + savedFormat);
 				outputChart = savedFormat;
 				if(!outputChart) {								
 					$("#outputFormat").button({ label: "Output:Raw" })
@@ -185,8 +185,8 @@
 		});
 		//addCharts();
 	} catch (e) {
-		console.error(e);
-		console.dir(e);
+		//console.error(e);
+		//console.dir(e);
 	}
 	});
 	
@@ -208,7 +208,7 @@
 				}
 				running += ((i>0 ? '.' : '') + seg);
 				if(tree.getNodeByKey(running)==null) {
-					console.info("Adding Tree Node [%s] with Key [%s] Folder:[%s]", seg, running, (i!=segCnt));
+					//console.info("Adding Tree Node [%s] with Key [%s] Folder:[%s]", seg, running, (i!=segCnt));
 					currentNode.addChild({
 				        title: seg,
 				        key: running,
@@ -252,7 +252,7 @@
 		} 
 		pushtype = pType[0].id;
 		if(pushtype==null) {
-			console.error("No push type");
+			//console.error("No push type");
 			return false;
 		}
 		var name = null;
@@ -312,7 +312,7 @@
 			})
 			.error(function(req,msg) {
 				if(msg!='abort') {
-					console.error('Error on longpoll:' + msg);
+					//console.error('Error on longpoll:' + msg);
 				}
 			})
 			.complete(function() {
@@ -328,21 +328,21 @@
 	 */
 	function startWebSocket() {
 		var wsUrl = 'ws://' + document.location.host + '/ws';
-		console.info('WebSocket URL:[%s]', wsUrl);
+		//console.info('WebSocket URL:[%s]', wsUrl);
 		ws = new WebSocket(wsUrl); 
 		var on = onEvent;		
 		ws.onopen = function() {
 			busyOn();
-		    console.info("WebSocket Opened");
+		    //console.info("WebSocket Opened");
 		}; 
 		ws.onerror = function(e) {
 			busyOff();
-			console.info("WebSocket Error");
-			console.dir(e);
+			//console.info("WebSocket Error");
+			//console.dir(e);
 		}; 
 		ws.onclose = function() { 
 			busyOff();
-			console.info("WebSocket Closed"); 
+			//console.info("WebSocket Closed"); 
 		}; 
 		ws.onmessage = function(msg) {			
 			var json = $.parseJSON(msg.data);
