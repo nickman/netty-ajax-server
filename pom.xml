@@ -78,6 +78,21 @@
 	                </descriptorRefs>
 	            </configuration>
 	        </plugin>
+		     <plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>exec-maven-plugin</artifactId>
+		        <executions>
+		          <execution>
+		            <goals>
+		              <goal>exec</goal>
+		            </goals>
+		          </execution>
+		        </executions>
+		        <configuration>
+		        	<mainClass>org.helios.netty.ajax.Server</mainClass>
+		          	<executable>maven</executable>
+		        </configuration>
+		      </plugin>	        
 		</plugins>
 	</build>
 

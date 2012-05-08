@@ -55,7 +55,6 @@ import javax.management.ObjectName;
 
 import org.helios.netty.ajax.PipelineModifier;
 import org.helios.netty.ajax.SharedChannelGroup;
-import org.helios.netty.ajax.handlergroups.longpoll.TimeoutChannel;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelDownstreamHandler;
@@ -70,7 +69,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.util.CharsetUtil;

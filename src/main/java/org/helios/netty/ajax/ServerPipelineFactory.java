@@ -33,9 +33,7 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
-import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.handler.stream.ChunkedWriteHandler;
-import org.jboss.netty.logging.InternalLogLevel;
 
 /**
  * <p>Title: ServerPipelineFactory</p>

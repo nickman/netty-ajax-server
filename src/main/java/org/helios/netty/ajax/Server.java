@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.helios.netty.ajax.handlergroups.URIHandler;
 import org.helios.netty.ajax.handlergroups.fileserver.HttpStaticFileServerHandler;

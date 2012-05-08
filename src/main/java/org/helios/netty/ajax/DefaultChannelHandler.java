@@ -32,7 +32,6 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.websocketx.WebSocketFrame;
 
 /**
  * <p>Title: DefaultChannelHandler</p>

@@ -50,6 +50,8 @@ import org.json.JSONObject;
  * <p><code>org.helios.netty.jmx.ThreadPoolFactory</code></p>
  */
 public class ThreadPoolFactory extends ThreadPoolExecutor implements MetricProvider, ThreadFactory, ThreadPoolMXBean {
+	/**  */
+	private static final long serialVersionUID = 5127908418248445054L;
 	/** The ObjectName that will be used to register the thread pool management interface */
 	protected final ObjectName objectName;
 	/** Serial number factory for thread names */
