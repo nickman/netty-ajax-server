@@ -80,7 +80,7 @@ public class ServerPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
 		//pipeline.addLast("logger", new LoggingHandler(InternalLogLevel.INFO));
 		pipeline.addLast(DefaultChannelHandler.NAME, new DefaultChannelHandler(modifierMap)); 
-		log.info("Created Pipeline [" + pipeline + "]");
+		if(log.isDebugEnabled()) log.debug("Created Pipeline [" + pipeline + "]");
 		return pipeline;
 	}
 
