@@ -56,6 +56,7 @@ import org.json.JSONObject;
  * <p>Company: Helios Development Group LLC</p>
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
  * <p><code>org.helios.netty.ajax.handlergroups.longpoll.LongPollHandler</code></p>
+ * @ToDo: See http://stackoverflow.com/questions/2294010/long-polling-netty-nio-framework-java  
  */
 public class LongPollHandler implements ChannelUpstreamHandler, ChannelDownstreamHandler {
 
