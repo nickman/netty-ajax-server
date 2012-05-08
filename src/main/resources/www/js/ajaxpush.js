@@ -14,6 +14,8 @@
 	var tree = null;
 	var rootNode = null;
 	var treeVisible = true;
+	var metricIdMatch = new RegExp('\\[.*\\]');
+	var metricIdReplace = /\[|\]/g;
 	/**
 	 * Initializes the client
 	 */
@@ -128,18 +130,31 @@
 			var chartSeries = $('#dlg-metrics-ids').text().split('\n');
 			var chartLabels = [];
 			var newChart = null;
-			if(chartType=='Line') {
+			var enumChart = (chartSeries[0].substr(-1) === "*");
+			if(chartType=='Line' && !enumChart) {
 				$.each(chartSeries, function(index, value){
-					var arr = value.split('.');
-					chartLabels.push(arr[arr.length-1]);
+					var node = tree.getNodeByKey(value);
+					if(node.data.idkey!=null) {
+						chartLabels.push(node.data.idkey);
+					} else {
+						var arr = value.split('.');
+						chartLabels.push(arr[arr.length-1]);						
+					}
 				});
 				
 				newChart = new LineChart({		
 					dataKeys: chartSeries,
 					labels: chartLabels,
 					title: chartTitle
-				});		
-				
+				});						
+			} else if(chartType=='Pie' || enumChart) {				
+				if($.trim(chartTitle)=='') {
+					chartTitle = chartSeries[0].slice(0,chartSeries[0].length-1);
+				}
+				newChart = new PieChart({		
+					dataKeys: chartSeries,
+					title: chartTitle
+				});
 			}
 			addDataListener(newChart);
 			$('#chart-dialog').dialog('destroy');
@@ -200,20 +215,31 @@
 			var segCnt = segs.length-1;
 			var running = '';
 			var currentNode = null;
+			var idKey = null;
 			$.each(value.split('.'), function(i, seg) {
 				if(currentNode==null) {
 					currentNode = rootNode;
 				} else {
 					currentNode = tree.getNodeByKey(running);
 				}
+				
+				if(metricIdMatch.test(seg)) {
+					seg = seg.replace(metricIdReplace, '');
+					idKey = seg;
+				}
 				running += ((i>0 ? '.' : '') + seg);
 				if(tree.getNodeByKey(running)==null) {
 					//console.info("Adding Tree Node [%s] with Key [%s] Folder:[%s]", seg, running, (i!=segCnt));
-					currentNode.addChild({
-				        title: seg,
-				        key: running,
-				        isFolder: (i!=segCnt)
-				    });
+					var props = {
+					        title: seg,
+					        key: running,
+					        isFolder: (i!=segCnt)				        
+					};
+					if(idKey!=null) {
+						props.tooltip = idKey;
+						props.idkey = idKey;
+					}
+					currentNode.addChild(props);
 				}
 			});
 		});		

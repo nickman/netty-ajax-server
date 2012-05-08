@@ -36,6 +36,7 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -159,6 +160,7 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	 */
 	public void run() {
 		try {
+			updateMetricNames();
 			Notification notif = new Notification(MetricProvider.METRIC_NOTIFICATION, OBJECT_NAME, tick.incrementAndGet(), System.currentTimeMillis());
 			final JSONObject json = new JSONObject();
 			final JSONObject envelope = new JSONObject();
@@ -177,6 +179,28 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 			e.printStackTrace(System.err);
 		} finally {
 			scheduler.schedule(this, period, TimeUnit.MILLISECONDS);
+		}
+	}
+	
+	/**
+	 * Collects metric names from participating metric providers
+	 * @throws JSONException 
+	 */
+	protected void updateMetricNames() throws JSONException {
+		Notification notif = new Notification(MetricProvider.METRIC_NAME_NOTIFICATION, OBJECT_NAME, tick.incrementAndGet(), System.currentTimeMillis());
+		final Set<String> names = new HashSet<String>();
+		final Set<String> newNames = new HashSet<String>();
+		notif.setUserData(names);
+		sendNotification(notif);
+		for(String s: names) {
+			if(metricNames.add(s)) {
+				newNames.add(s);
+			}
+		}
+		if(!newNames.isEmpty()) {
+			JSONObject envelope = new JSONObject();
+			envelope.put("metric-names", new JSONArray(newNames));
+			SharedChannelGroup.getInstance().write(envelope);
 		}
 	}
 	

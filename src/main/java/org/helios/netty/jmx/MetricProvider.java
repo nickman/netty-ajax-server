@@ -40,7 +40,10 @@ import org.json.JSONObject;
  */
 public interface MetricProvider extends NotificationListener, NotificationFilter {
 	/** The notification type for a metric collection */
-	public static final String METRIC_NOTIFICATION = "metric.request"; 
+	public static final String METRIC_NOTIFICATION = "metric.request";
+	/** The notification type for a metric name collection */
+	public static final String METRIC_NAME_NOTIFICATION = "metric.name.request"; 
+	
 	/**
 	 * Writes the provided metric instances into the passed {@link JSONObject}
 	 * @param json The {@link JSONObject} to write the metrics into

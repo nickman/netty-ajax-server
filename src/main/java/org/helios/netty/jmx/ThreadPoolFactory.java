@@ -90,7 +90,7 @@ public class ThreadPoolFactory extends ThreadPoolExecutor implements MetricProvi
 			ManagementFactory.getPlatformMBeanServer().registerMBean(this, objectName);
 			threadingMetrics.put(name, poolMetrics);
 			ManagementFactory.getPlatformMBeanServer().addNotificationListener(MetricCollector.OBJECT_NAME, this, this, null);
-			String prefix = "threadPools~" + name + "~";
+			String prefix = "threadPools.[" + name + "].";
 			for(String s: points) {
 				metricNames.add(prefix + s);
 			}
@@ -105,9 +105,16 @@ public class ThreadPoolFactory extends ThreadPoolExecutor implements MetricProvi
 	 * {@inheritDoc}
 	 * @see javax.management.NotificationListener#handleNotification(javax.management.Notification, java.lang.Object)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void handleNotification(Notification notification, Object handback) {
-		addMetrics((JSONObject)notification.getUserData());
+		String notifType = notification.getType();
+		if(METRIC_NAME_NOTIFICATION.equals(notifType)) {
+			Set<String> names = (Set<String>)notification.getUserData();
+			names.addAll(metricNames);
+		} else {
+			addMetrics((JSONObject)notification.getUserData());
+		}
 	}
 
 	/**
@@ -154,7 +161,8 @@ public class ThreadPoolFactory extends ThreadPoolExecutor implements MetricProvi
 	 */
 	@Override
 	public boolean isNotificationEnabled(Notification notification) {
-		return METRIC_NOTIFICATION.equals(notification.getType()) && notification.getUserData() instanceof JSONObject;
+		String notifType = notification.getType();
+		return (METRIC_NAME_NOTIFICATION.equals(notifType) && notification.getUserData() instanceof Set) ||  (METRIC_NOTIFICATION.equals(notification.getType()) && notification.getUserData() instanceof JSONObject);
 	}
 
 }
