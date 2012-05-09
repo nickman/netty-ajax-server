@@ -125,6 +125,7 @@
 		});
 		
 		$('#addChartButton').bind('click', function(){
+			var useIdKeys = $('#dlg-usedidkeys').prop('checked');
 			var chartType = $('#dlg-type').val();
 			var chartTitle = $('#dlg-name').val();
 			var chartSeries = $('#dlg-metrics-ids').text().split('\n');
@@ -133,12 +134,17 @@
 			var enumChart = (chartSeries[0].substr(-1) === "*");
 			if(chartType=='Line' && !enumChart) {
 				$.each(chartSeries, function(index, value){
-					var node = tree.getNodeByKey(value);
-					if(node.data.idkey!=null) {
-						chartLabels.push(node.data.idkey);
-					} else {
+					if(!useIdKeys) {
 						var arr = value.split('.');
-						chartLabels.push(arr[arr.length-1]);						
+						chartLabels.push(arr[arr.length-1]);												
+					} else {
+						var node = tree.getNodeByKey(value);
+						if(node.data.idkey!=null) {
+							chartLabels.push(node.data.idkey);
+						} else {
+							var arr = value.split('.');
+							chartLabels.push(arr[arr.length-1]);						
+						}
 					}
 				});
 				
@@ -240,6 +246,7 @@
 						props.idkey = idKey;
 					}
 					currentNode.addChild(props);
+					currentNode.sortChildren();
 				}
 			});
 		});		

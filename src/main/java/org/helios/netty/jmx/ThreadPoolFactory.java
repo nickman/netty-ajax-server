@@ -162,7 +162,7 @@ public class ThreadPoolFactory extends ThreadPoolExecutor implements MetricProvi
 	@Override
 	public boolean isNotificationEnabled(Notification notification) {
 		String notifType = notification.getType();
-		return (METRIC_NAME_NOTIFICATION.equals(notifType) && notification.getUserData() instanceof Set) ||  (METRIC_NOTIFICATION.equals(notification.getType()) && notification.getUserData() instanceof JSONObject);
+		return (METRIC_NAME_NOTIFICATION.equals(notifType) && notification.getUserData() instanceof Set) ||  (METRIC_NOTIFICATION.equals(notifType) && notification.getUserData() instanceof JSONObject);
 	}
 
 }
