@@ -28,9 +28,11 @@ import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.OK;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.helios.netty.jmx.MetricCollector;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
@@ -89,16 +91,18 @@ public class SubmissionHandler implements ChannelUpstreamHandler  {
 	protected int processMetric(HttpRequest request) {
 		QueryStringDecoder decoder = new QueryStringDecoder(request.getUri());
 		Map<String,List<String>> params = decoder.getParameters();
-		int cnt = 0;
+		Map<String, Long> metrics = new HashMap<String, Long>();
+		
 		for(Map.Entry<String,List<String>> entry: params.entrySet()) {
 			try {
-			String metricName = entry.getKey();
-			String value = entry.getValue().iterator().next();
-			long lvalue = Long.parseLong(value.trim());
-			cnt++;
+				String metricName = entry.getKey();
+				String value = entry.getValue().iterator().next();
+				long lvalue = Long.parseLong(value.trim());
+				metrics.put(metricName, lvalue);
 			} catch (Exception e) {}
 		}
-		return cnt;
+		MetricCollector.getInstance().submitMetrics(metrics);
+		return metrics.size();
 	}
 
 }

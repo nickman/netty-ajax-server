@@ -416,8 +416,8 @@
 			}			
 			if(data.metrics!=null) {
 				notifyListeners(data.metrics);
-			} else if(data.metric-names != null){
-				addToMetricTree(data.metric-names);
+			} else if(data['metric-names'] != null){
+				addToMetricTree(data['metric-names']);
 			}
 		}
 	}

@@ -34,6 +34,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +55,7 @@ import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 
+import org.apache.log4j.Logger;
 import org.helios.netty.ajax.PipelineModifier;
 import org.helios.netty.ajax.SharedChannelGroup;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -107,13 +109,50 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	public static final ObjectName OBJECT_NAME = JMXHelper.objectName("org.helios.netty.jmx:service=MetricCollector");
 	/** A set of the unique metric names */
 	protected final Set<String> metricNames = new CopyOnWriteArraySet<String>();
-
+	/** Instance logger */
+	protected final Logger log = Logger.getLogger(getClass());
 	/** The schedule handle */
 	protected ScheduledFuture<?> handle = null;
 	/** The scheduler */
 	protected final ScheduledThreadPoolExecutor scheduler;
 	
-	public MetricCollector(long period) {
+	/** The singleton instance */
+	private static volatile MetricCollector instance = null;
+	/** The singleton ctor lock */
+	private static final Object lock = new Object();
+	
+	/**
+	 * Acquires the singleton instance. First call wins on the period.
+	 * @param period The ms. between each metric collect.
+	 * @return The metric collector singleton
+	 */
+	public static MetricCollector getInstance(long period) {
+		if(instance==null) {
+			synchronized(lock) {
+				if(instance==null) {
+					instance = new MetricCollector(period);
+				}
+			}
+		}
+		return instance;
+	}
+	
+	/**
+	 * Acquires the singleton instance. 
+	 * @return The metric collector singleton
+	 */
+	public static MetricCollector getInstance() {
+		if(instance==null) {
+			throw new RuntimeException("The metric collector has not been initialized", new Throwable());
+		}
+		return instance;
+	}
+	
+	/**
+	 * Creates a new MetricCollector
+	 * @param period The period of collection
+	 */
+	private MetricCollector(long period) {
 		super();
 		haveNioMXBean = ManagementFactory.getPlatformMBeanServer().isRegistered(directNio);
 		this.period = period;
@@ -128,14 +167,103 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 			});
 			initMetricNames();
 			scheduler.schedule(this, period, TimeUnit.MILLISECONDS);
+			log.info("Started MetricCollector with a period of " + period + " ms.");
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to create MetricCollector", e);
 		}
 	}
 	
-	public void submitMetric(String metricName, Number value) {
-		
+	/**
+	 * Submits a new metric and value
+	 * @param metricName The metric name
+	 * @param value The metric value
+	 */
+	public void submitMetric(String metricName, long value) {
+		if(metricNames.add(metricName)) {
+			JSONObject envelope = new JSONObject();
+			try {
+				envelope.put("metric-names", new JSONArray(new String[]{metricName}));
+				SharedChannelGroup.getInstance().write(envelope);
+				SharedChannelGroup.getInstance().write(packageMetricUpdate(Collections.singletonMap(metricName, value)));
+			} catch (JSONException e) {
+				log.error("Failed to submit metric", e);
+			}			
+		}
 	}
+	
+	/**
+	 * Submits a map of metrics
+	 * @param metrics A map of metric values keyed by metric name
+	 */
+	public void submitMetrics(Map<String, Long> metrics) {
+		Set<String> newNames = new HashSet<String>();
+		for(String s: metrics.keySet()) {
+			if(metricNames.add(s)) {
+				newNames.add(s);
+			}
+		}
+		try {
+			JSONObject envelope = new JSONObject();
+			envelope.put("metric-names", new JSONArray(newNames.toArray(new String[newNames.size()])));
+			SharedChannelGroup.getInstance().write(envelope);
+		} catch (JSONException e) {
+			log.error("Failed to submit metric names", e);
+		}		
+		try {
+			SharedChannelGroup.getInstance().write(packageMetricUpdate(metrics));
+		} catch (Exception e) {
+			log.error("Failed to send metrics", e);
+		}					
+	}
+	
+	
+	/**
+	 * Packages the passed map of metrics into a JSONObject
+	 * @param metrics A map of metric values keyed by metric name
+	 * @return The JSONObject with the metrics
+	 */
+	protected JSONObject packageMetricUpdate(Map<String, Long> metrics) {
+		try {
+			final JSONObject top = new JSONObject();
+			final JSONObject envelope = new JSONObject();
+			envelope.put("metrics", top);
+			for(Map.Entry<String, Long> entry: metrics.entrySet()) {
+				insertMetric(entry.getKey(), entry.getValue(), top);
+			}
+			return envelope;
+		} catch (Exception e) {
+			log.error("Failed to package metric updates", e);
+			return null;
+		}
+	}
+	
+	/**
+	 * Inserts the metric name keys and value into the passed JSONObject
+	 * @param metricName The metric name
+	 * @param value The metric value
+	 * @param top The JSONObject to insert into
+	 * @throws JSONException
+	 */
+	protected void insertMetric(String metricName, long value, JSONObject top) throws JSONException {
+		String[] frags = metricName.split("\\.");
+		int fc = frags.length;
+		JSONObject current = top;
+		for(int i = 0; i < fc; i++) {
+			if(i==fc-1) {
+				current.put(frags[i], value);
+			} else {
+				JSONObject tmp = null;
+				if(current.has(frags[i])) {
+					tmp = current.getJSONObject(frags[i]);
+				} else {
+					tmp = new JSONObject();
+					current.put(frags[i], tmp);					
+				}
+				current = tmp;
+			}
+		}
+	}
+	
 	
 	/**
 	 * The MetricCollector is not a real MetricProvider, but it needs to supply the names of the metrics

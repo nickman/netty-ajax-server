@@ -132,7 +132,7 @@ public class Server {
 		this.contentRoot = root;
 		HttpStaticFileServerHandler.contentRoot = root;
 		isock = new InetSocketAddress(iface, port);
-		MetricCollector collector = new MetricCollector(5000);
+		MetricCollector collector = MetricCollector.getInstance(5000);
 		
 		bossPool = ThreadPoolFactory.newCachedThreadPool(getClass().getPackage().getName(), "boss");
 		workerPool =  ThreadPoolFactory.newCachedThreadPool(getClass().getPackage().getName(), "worker");

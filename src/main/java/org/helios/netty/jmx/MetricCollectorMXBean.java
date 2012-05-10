@@ -37,4 +37,11 @@ public interface MetricCollectorMXBean {
 	 * @return the metricNames
 	 */
 	public String getMetricNames();
+	
+	/**
+	 * Submits a new metric and value
+	 * @param metricName The metric name
+	 * @param value The metric value
+	 */
+	public void submitMetric(String metricName, long value);
 }

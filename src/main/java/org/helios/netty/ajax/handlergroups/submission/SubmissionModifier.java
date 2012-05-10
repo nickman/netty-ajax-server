@@ -24,11 +24,15 @@
  */
 package org.helios.netty.ajax.handlergroups.submission;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.helios.netty.ajax.PipelineModifier;
 import org.helios.netty.ajax.handlergroups.URIHandler;
-import org.helios.netty.ajax.handlergroups.streamer.StreamingHandler;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.handler.execution.ExecutionHandler;
 
 /**
  * <p>Title: SubmissionModifier</p>
@@ -43,6 +47,19 @@ public class SubmissionModifier implements PipelineModifier {
 	protected final ChannelHandler handler = new SubmissionHandler();
 	/** The name of the handler this modifier adds */
 	public static final String NAME = "submission";
+	/** An execution handler to hand off the metric submissions to */
+	protected static final ExecutionHandler execHandler = new ExecutionHandler(Executors.newCachedThreadPool(			
+			new ThreadFactory() {
+				final AtomicInteger serial = new AtomicInteger(0);
+				public Thread newThread(Runnable r) {
+					Thread t = new Thread(r, "MetricSubmissionThread#" + serial.incrementAndGet());
+					t.setDaemon(true);
+					return t;
+				}
+			}
+	), false, true);
+	/** The name of the execution handler this modifier adds */
+	public static final String EXEC_NAME = "exec-submission";
 	
 	/**
 	 * {@inheritDoc}
@@ -59,9 +76,13 @@ public class SubmissionModifier implements PipelineModifier {
 	 */
 	@Override
 	public void modifyPipeline(ChannelPipeline pipeline) {
+		if(pipeline.get(EXEC_NAME)==null) {
+			pipeline.addLast(EXEC_NAME, execHandler);
+		}
 		if(pipeline.get(NAME)==null) {
 			pipeline.addLast(NAME, handler);
 		}
+		
 	}
 
 	/**
