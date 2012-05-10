@@ -133,6 +133,10 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 		}
 	}
 	
+	public void submitMetric(String metricName, Number value) {
+		
+	}
+	
 	/**
 	 * The MetricCollector is not a real MetricProvider, but it needs to supply the names of the metrics
 	 * it published, so we add them to the registry here.

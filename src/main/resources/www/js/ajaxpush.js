@@ -123,7 +123,9 @@
 				addToMetricTree(data['metric-names']);
 			});			
 		});
-		
+		$('#addScriptButton').bind('click', function(){
+			$('#script-dialog').dialog({height:200, width:300});
+		});
 		$('#addChartButton').bind('click', function(){
 			var useIdKeys = $('#dlg-usedidkeys').prop('checked');
 			var chartType = $('#dlg-type').val();
@@ -165,6 +167,7 @@
 			addDataListener(newChart);
 			$('#chart-dialog').dialog('destroy');
 		});
+		//$('#scriptText').keydown(function(event) { console.dir(event); });
 		
 		
 		

@@ -28,6 +28,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.lang.management.ManagementFactory;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -77,6 +81,7 @@ public class ScriptedCollectorFactory {
 		engine.put("mbeanserver", ManagementFactory.getPlatformMBeanServer());
 		engine.put("jmxhelper", new JMXHelper());
 	}
+	
 	
 	/**
 	 * Compiles the passed source text into a {@link MetricProvider}

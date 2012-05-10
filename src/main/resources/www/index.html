@@ -13,7 +13,7 @@
 		<script type="text/javascript" src="js/jquery.metadata.js"></script>
 		<script type="text/javascript" src="js/Class-0.0.2.min.js"></script>
 		<script type="text/javascript" src="dynatree/jquery.dynatree.min.js"></script>
-		
+		<script type="text/javascript" src="prettify/prettify.js"></script>
 		<script type="text/javascript" src="flot/jquery.flot.js"></script>
 		<script type="text/javascript" src="flot/jquery.flot.pie.js"></script>
 		<script type="text/javascript" src="flot/jquery.flot.resize.js"></script>
@@ -26,7 +26,7 @@
 		
 		<link type="text/css" href="css/basic.css" rel="stylesheet" media="all"/>
 		<link type="text/css" href="ui/css/cupertino/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
-		
+		<link type="text/css" href="prettify/prettify.css" rel="stylesheet" />
 		<link type='text/css' href='dynatree/skin/ui.dynatree.css' rel='stylesheet'>	
 			
 	</head>
@@ -96,6 +96,7 @@
 			<button id="controlButton">Start</button>
 			<button id="clearButton">Clear</button>
 			<button id="outputFormat">Output:Charts</button>
+			<button id="addScriptButton">Add Script</button>
 			
 		</div>
 		
@@ -142,6 +143,15 @@
 			<br>
 			<button id="addChartButton">Add Chart</button>				
 			<button id="dlg-metrics-advanced">Advanced &gt;&gt;</button>			
+		</div>
+
+		<div id="script-dialog" title="Create New Script" onload="prettyPrint()">
+			<textarea id="scriptText" contenteditable="true" style="overflow:auto;" rows="20" cols="60" class="prettyprint lang-js">
+			</textarea>			
+			<br>
+			<button id="loadScriptButton">Load Script</button>				
+			<pre id="fmtSource" class="prettyprint lang-js" style="display: none;" >
+			</pre>					
 		</div>
 		
 		

@@ -31,12 +31,10 @@
 	<!-- 
 		Enable this category to add the netty logging handler to the server pipeline.	
 	 -->
-	 <!-- 
 	    <category name="org.jboss.netty.handler.logging.LoggingHandler">
      		<priority value="DEBUG"/>
      		<appender-ref ref="CONSOLE"/>
    		</category>	 
-	  -->
 	 
 
    <root>
