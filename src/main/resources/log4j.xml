@@ -35,6 +35,16 @@
      		<priority value="INFO"/>
      		<appender-ref ref="CONSOLE"/>
    		</category>	 
+   		
+   	<!-- 
+   		Set this category to DEBUG to see logging for the Port Unification Protocol Switch
+   	 -->
+	    <category name="org.helios.netty.ajax.ProtocolSwitch">
+     		<priority value="INFO"/>
+     		<appender-ref ref="CONSOLE"/>
+   		</category>	 
+   	 
+   	 
 	 
 
    <root>

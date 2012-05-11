@@ -25,7 +25,6 @@
 package org.helios.netty.ajax;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -40,13 +39,13 @@ import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.UpstreamMessageEvent;
+import org.jboss.netty.handler.codec.compression.ZlibDecoder;
+import org.jboss.netty.handler.codec.compression.ZlibWrapper;
 import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
 import org.jboss.netty.handler.codec.frame.Delimiters;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 import org.jboss.netty.handler.codec.string.StringDecoder;
 import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.jboss.netty.handler.logging.LoggingHandler;
-import org.jboss.netty.logging.InternalLogLevel;
 import org.jboss.netty.util.CharsetUtil;
 
 /**
@@ -96,11 +95,20 @@ public class ProtocolSwitch extends FrameDecoder {
 		final int magic2 = buffer.getUnsignedByte(buffer.readerIndex() + 1);		
 		if(log.isDebugEnabled()) log.debug("\n\t  MAGIC:" + new String(new byte[]{(byte)magic1, (byte)magic2}) + "\n");
 		if (!isHttp(magic1, magic2)) {
-			if(log.isDebugEnabled()) log.debug("Switching to Raw Socket");
+			boolean gzip = false;
+			if(isGzip(magic1, magic2)) {
+				gzip = true;
+				if(log.isDebugEnabled()) log.debug("Switching to GZipped Raw Socket");
+			} else {
+				if(log.isDebugEnabled()) log.debug("Switching to Raw Socket");
+			}
 			ChannelHandler ch = null;
 			while((ch = pipeline.getFirst())!=null) {
 					pipeline.remove(ch);
 			}			
+			if(gzip) {
+				pipeline.addLast("decompressor", new ZlibDecoder(ZlibWrapper.GZIP));
+			}
 			List<ChannelBuffer> delims = new ArrayList<ChannelBuffer>();
 			delims.add(COMMA_DELIM);
 			Collections.addAll(delims, Delimiters.lineDelimiter());
@@ -117,6 +125,16 @@ public class ProtocolSwitch extends FrameDecoder {
 			ctx.getPipeline().remove(this);
 			return buffer.readBytes(buffer.readableBytes());
 		}								
+	}
+	
+	/**
+	 * Determines if the channel is carrying a gzipped metric submssion
+	 * @param magic1 The first byte of the incoming request
+	 * @param magic2 The second byte of the incoming request
+	 * @return true if the incoming payload is gzipped
+	 */
+	private boolean isGzip(int magic1, int magic2) {
+		return magic1 == 31 && magic2 == 139;	
 	}
 	
 	/**
