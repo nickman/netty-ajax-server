@@ -236,7 +236,11 @@
 				
 				if(metricIdMatch.test(seg)) {
 					seg = seg.replace(metricIdReplace, '');
-					idKey = seg;
+					if(idKey==null) {
+						idKey = seg;
+					} else {
+						idKey += ('-' + seg);
+					}
 				}
 				running += ((i>0 ? '.' : '') + seg);
 				if(tree.getNodeByKey(running)==null) {

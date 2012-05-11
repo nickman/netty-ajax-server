@@ -271,11 +271,11 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	 */
 	protected void initMetricNames() {
 		String[] memMetrics = new String[]{
-				"capacityperc", "committed", "init", "max", "used", "usedperc"
+				"[capacity(%)]", "[committed]", "[init]", "[max]", "[used]", "[consumed(%)]"
 		};
 		for(String m: memMetrics) {
-			metricNames.add("heap." + m);
-			metricNames.add("non-heap." + m);
+			metricNames.add("[heap]." + m);
+			metricNames.add("[non-heap]." + m);
 		}
 		if(haveNioMXBean) {
 			for(String s: NIO_ATTRS) {
@@ -347,8 +347,8 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	 */
 	protected JSONObject processMemoryUsage(MemoryUsage usage) throws JSONException {
 		JSONObject json = new JSONObject(usage);
-		json.put("usedperc", calcPercent(usage.getUsed(), usage.getCommitted()));
-		json.put("capacityperc", calcPercent(usage.getUsed(), usage.getMax()));		
+		json.put("consumed(%)", calcPercent(usage.getUsed(), usage.getCommitted()));
+		json.put("capacity(%)", calcPercent(usage.getUsed(), usage.getMax()));		
 		return json;
 	}
 	
