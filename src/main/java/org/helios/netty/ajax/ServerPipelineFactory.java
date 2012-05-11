@@ -71,6 +71,8 @@ public class ServerPipelineFactory implements ChannelPipelineFactory {
 		modifierMap.put(name, modifier);
 	}
 	
+	private final ProtocolSwitch ps = new ProtocolSwitch();
+	
 	/**
 	 * {@inheritDoc}
 	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
@@ -78,6 +80,7 @@ public class ServerPipelineFactory implements ChannelPipelineFactory {
 	@Override
 	public ChannelPipeline getPipeline() throws Exception {
 		ChannelPipeline pipeline = Channels.pipeline();
+		pipeline.addLast("protocolSwitch", ps);
 		pipeline.addLast("decoder", new HttpRequestDecoder());
 		pipeline.addLast("aggregator", new HttpChunkAggregator(65536));
 		pipeline.addLast("encoder", new HttpResponseEncoder());

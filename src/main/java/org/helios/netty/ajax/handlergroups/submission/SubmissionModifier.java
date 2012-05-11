@@ -52,7 +52,7 @@ public class SubmissionModifier implements PipelineModifier {
 			new ThreadFactory() {
 				final AtomicInteger serial = new AtomicInteger(0);
 				public Thread newThread(Runnable r) {
-					Thread t = new Thread(r, "MetricSubmissionThread#" + serial.incrementAndGet());
+					Thread t = new Thread(r, "HttpMetricSubmissionThread#" + serial.incrementAndGet());
 					t.setDaemon(true);
 					return t;
 				}

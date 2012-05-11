@@ -33,52 +33,19 @@
 	<body id="main">
 		<h3>Netty Ajax Server</h3>
 		
-		<div id="accordion">
-    		<h3 class="stream pushtypeh"><a href="#">HTTP Streaming</a></h3>
-    		<div class="stream">
-    			<label for="streamer" id="streamer_label" >HTTP Streaming</label>
+		<div id="pushtypes" style="position: relative;">
+    			<label for="streamer" id="streamer_label" >HTTP Streaming:</label>
 				<input type="radio" id="streamer" name="pushtype" >
-				<label for="streamcount">Responses:</label>
-				<input type=number id="streamcount" class="counter" value="0" disabled="disabled" >					
-				<div  id="streamerbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>			    		
-    		</div>
-
-    		<h3 class="websock pushtypeh"><a href="#">WebSockets</a></h3>
-    		<div class="websock">
-				<label for="ws" id="ws_label">WebSockets</label>
+				<label for="ws" id="ws_label">WebSockets:</label>
 				<input type="radio" id="ws" name="pushtype"  >
-				<label for="wscount">Responses:</label>
-				<input type="number" id="wscount" class="counter" value="0" disabled="disabled" >
-				<div id="wsbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>
-    		</div>
-    		
-    		<h3 class="longp pushtypeh" ><a href="#">Long Polling</a></h3>
-    		<div class="longp">
-				<label for="lpoll" id="lpoll_label" >Long Poll</label>
+				<label for="lpoll" id="lpoll_label" >Long Poll:</label>
 				<input type="radio" id="lpoll" name="pushtype">
-				<div id="timeoutdiv">
-					<label for="lpolltimeout" id="lpoll_lpolltimeout">Long Poll Timeout (ms):</label>
-					<input type="number" id="lpolltimeout" value="3000" >
-					<label for="lpollcount">Responses:</label>
-					<input type="number" id="lpollcount" class="counter" value="0" disabled="disabled" >
-					<div id="longpollbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>
-				</div>
-    		</div>
+				<label for="lpolltimeout" id="lpoll_lpolltimeout">Long Poll Timeout (ms):</label>
+				<input type="number" id="lpolltimeout" value="3000" size="6" >
+				<label for="responsecount">Responses:</label>
+				<input type="number" id="responsecount" class="counter" size="7" value="0" disabled="disabled" >
+				<div id="longpollbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>
 		</div>
-		
-<!-- 
-			<ul id="metricTreeUl" class="mtree" > 
-				<li><span id="metricTreeToggler" class="folder">Metrics Dictionary</span></li>
-				<li id="metricTreeLi">
-					<div id="metricTreeDiv"></div>
-					<button id="chartBtn">Chart It</button>
-					<button id="chartClearSelBtn">Clear Sel</button>	
-					<button id="chartRevSelBtn">Rev Sel</button>
-				</li>			
-			</ul>
-			
-			<span id="metricTreeIcon" class="ui-icon ui-icon-triangle-1-n">
- -->
  
 			<div id="metricTreeUl" class="mtree" > 
 				<div style="display: inline-block;width: 100%;" class="ui-widget-header"><span id="metricTreeToggleIcon" class="ui-icon ui-icon-circle-triangle-s ui-widget-header" style="display: inline-block;vertical-align:middle;" ></span><span style="display: inline-block;vertical-align:middle;" id="metricTreeToggler">Metrics Dictionary</span></div>
@@ -96,8 +63,9 @@
 			<button id="controlButton">Start</button>
 			<button id="clearButton">Clear</button>
 			<button id="outputFormat">Output:Charts</button>
-			<button id="addScriptButton">Add Script</button>
-			
+			<!-- <button id="addScriptButton">Add Script</button> -->
+			<label for="autoStart">Auto Start:</label>
+			<input type="checkbox" id="autoStart" title="Auto Start" />			
 		</div>
 		
 		

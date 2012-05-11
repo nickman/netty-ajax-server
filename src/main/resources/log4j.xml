@@ -32,7 +32,7 @@
 		Set this category to DEBUG to add the netty logging handler to the server pipeline.	
 	 -->
 	    <category name="org.jboss.netty.handler.logging.LoggingHandler">
-     		<priority value="INFO"/>
+     		<priority value="DEBUG"/>
      		<appender-ref ref="CONSOLE"/>
    		</category>	 
 	 

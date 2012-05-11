@@ -68,6 +68,9 @@ public class DefaultChannelHandler extends SimpleChannelUpstreamHandler {
 	        	modifier.modifyPipeline(ctx.getPipeline());
 	        	ctx.setAttachment(modifier.getName());
 	        }
+    	} else {
+    		log.info("\n\t=====================\n\tNon HTTP Message Received\n\t" + message.getClass().getName() + "\n\t=====================\n");
+    		ctx.sendDownstream(e);
     	}
         ctx.sendUpstream(e);
     }

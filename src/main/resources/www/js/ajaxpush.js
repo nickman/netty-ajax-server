@@ -28,17 +28,6 @@
 		
 		$('div.busyindicator').css({'display':'none'});
 		$('#display').resizable().draggable();
-		$( "#accordion" ).accordion({collapsible: true, active:false}).css('width', '40%');
-		$( "#accordion" ).accordion({
-			   change: function(event, ui) {
-				   $('input[type="radio"][name="pushtype"]').attr('checked', null);
-				   ui.newHeader.next('div').children('input[type="radio"]').attr('checked', 'checked');
-				   var newPs = $('input[type="radio"][name="pushtype"][checked="checked"]')[0].id;
-				   $.cookie('ajax.push.pushtype', newPs, { expires: 365 });
-				   $('h3.pushtypeh').removeClass('pushtypesel')
-				   $('#' + newPs).parent('div').last().prev().addClass('pushtypesel')
-			   }
-		});
 		$('button').button();
 		if(!webSocketCapable) {
 			$('#ws').remove();	
@@ -78,6 +67,11 @@
 				$("#displayRaw").hide();				
 			}
 			$.cookie('ajax.push.format', outputChart, { expires: 365 });
+		});
+		$('#autoStart').bind('change', function(event) {
+			var as = $('#autoStart').prop("checked");
+			$.cookie('ajax.autostart', $('#autoStart').prop("checked"), { expires: 365 });
+			console.info("AutoStart Cookie:%s", as);
 		});
 		// =====================================
 		//		Initialize Tree
@@ -183,6 +177,7 @@
 				$('input[type="radio"][name="pushtype"][checked="checked"]').parent('div').last().prev().addClass('pushtypesel')
 			}
 		}
+		
 		var savedFormat = $.cookie('ajax.push.format');
 		if(savedFormat!=null) {
 			if(savedFormat) {
@@ -207,6 +202,13 @@
 		$('#chartBtn').bind('click', function(){
 			
 		});
+		var autoStart = false;
+		autoStart = $.cookie('ajax.autostart');
+		console.info("AutoStart:%s", autoStart);		
+		if(autoStart) {
+			$('#autoStart').prop("checked", "checked");
+			$('#controlButton').click();
+		}
 		//addCharts();
 	} catch (e) {
 		//console.error(e);
@@ -407,7 +409,7 @@
 	 * @param data A JSON object to be rendered
 	 */
 	function onEvent(data) {
-		increment('#' + pushtype + 'count', 'value');
+		increment('#responsecount', 'value');
 		if(data!=null) {
 			lastData = data;
 			$('#displayRaw').append(formatJson(data));
@@ -717,4 +719,32 @@
 			$('#' + this.jkey).prepend($('<div class="chartClose ui-icon ui-icon-circle-close"></div>'));
 		}
 	}); 
+
+	/**
+	 * jQuery extension to grab the HTML text of an HTML object.
+	 * Intended for dashboard saves and restores.
+	 */
+	jQuery.fn.outerHtml = function(include_scripts) {
+		if(include_scripts === undefined){ include_scripts = false; }
+		var clone = this.clone();
+		var items = jQuery.map(clone, function(element){
+			if(jQuery.nodeName(element, "script")){
+				if(include_scripts){
+					var attributes;
+					if(element.attributes){
+						attributes = jQuery.map(element.attributes, function(attribute){
+							return attribute.name + '="' + attribute.value + '" ';
+						});
+					}
+					return '<' + element.nodeName + ' ' + attributes.join(' ') + ">" + jQuery(element).html() + "</" + element.nodeName +'>';
+				} else {
+					return '';
+				}
+			} else {
+				return jQuery('<div>').append(element).remove().html();
+			}
+		});
+		return items.join('');
+	}
+
 	
