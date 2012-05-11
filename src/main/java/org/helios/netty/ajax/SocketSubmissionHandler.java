@@ -52,7 +52,7 @@ public class SocketSubmissionHandler extends SimpleChannelHandler {
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
 		String metric = (String)e.getMessage();
-		log.info("\n\tProcessing Metric [" + metric + "]\n");
+		if(log.isDebugEnabled()) log.debug("\n\tProcessing Metric [" + metric + "]\n");
 		try {
 			String[] frags = metric.split(":");
 			long value = Long.parseLong(frags[1].trim());

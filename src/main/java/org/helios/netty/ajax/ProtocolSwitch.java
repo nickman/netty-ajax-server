@@ -24,6 +24,10 @@
  */
 package org.helios.netty.ajax;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,11 +39,14 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.UpstreamMessageEvent;
 import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
+import org.jboss.netty.handler.codec.frame.Delimiters;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 import org.jboss.netty.handler.codec.string.StringDecoder;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.logging.LoggingHandler;
+import org.jboss.netty.logging.InternalLogLevel;
 import org.jboss.netty.util.CharsetUtil;
 
 /**
@@ -87,24 +94,29 @@ public class ProtocolSwitch extends FrameDecoder {
 		ChannelPipeline pipeline = ctx.getPipeline();
 		final int magic1 = buffer.getUnsignedByte(buffer.readerIndex());
 		final int magic2 = buffer.getUnsignedByte(buffer.readerIndex() + 1);		
+		if(log.isDebugEnabled()) log.debug("\n\t  MAGIC:" + new String(new byte[]{(byte)magic1, (byte)magic2}) + "\n");
 		if (!isHttp(magic1, magic2)) {
-			log.info("Switching to Raw Socket");
+			if(log.isDebugEnabled()) log.debug("Switching to Raw Socket");
 			ChannelHandler ch = null;
 			while((ch = pipeline.getFirst())!=null) {
-				if(!(ch instanceof LoggingHandler)) {
 					pipeline.remove(ch);
-				}
-			}
-			pipeline.addLast("frameDecoder", new DelimiterBasedFrameDecoder(65536, COMMA_DELIM));
+			}			
+			List<ChannelBuffer> delims = new ArrayList<ChannelBuffer>();
+			delims.add(COMMA_DELIM);
+			Collections.addAll(delims, Delimiters.lineDelimiter());
+			Collections.addAll(delims, Delimiters.nulDelimiter());
+			pipeline.addLast("frameDecoder", new DelimiterBasedFrameDecoder(65536, true, true, delims.toArray(new ChannelBuffer[delims.size()])));
+			//pipeline.addLast("logger", new LoggingHandler(InternalLogLevel.INFO));
 			pipeline.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
 			pipeline.addLast("exec-handler", execHandler);
 			pipeline.addLast("submission-handler", submissionHandler);
-			
+			pipeline.sendUpstream(new UpstreamMessageEvent(channel, buffer, channel.getRemoteAddress()));
+			return null;
 		} else {
-			log.info("Switching to HTTP");
+			if(log.isDebugEnabled()) log.debug("Switching to HTTP");
 			ctx.getPipeline().remove(this);
-		}		
-		return buffer.readBytes(buffer.readableBytes());
+			return buffer.readBytes(buffer.readableBytes());
+		}								
 	}
 	
 	/**

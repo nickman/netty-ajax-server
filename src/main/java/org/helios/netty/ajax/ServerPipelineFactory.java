@@ -71,6 +71,7 @@ public class ServerPipelineFactory implements ChannelPipelineFactory {
 		modifierMap.put(name, modifier);
 	}
 	
+	/** The port unification pipeline switch */
 	private final ProtocolSwitch ps = new ProtocolSwitch();
 	
 	/**
