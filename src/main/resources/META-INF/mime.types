@@ -1,1 +1,5 @@
-application/js js JS
+text/js js JS
+image/svg+xml svg SVG
+image/jpeg jpg JPG jpeg JPEG
+image/png png PNG
+image/gif gif GIF

@@ -91,7 +91,7 @@ public class ProtocolSwitch extends FrameDecoder {
 			return null;
 		}	
 		ChannelPipeline pipeline = ctx.getPipeline();
-		final int magic1 = buffer.getUnsignedByte(buffer.readerIndex());
+		final int magic1 = buffer.getUnsignedByte(buffer.readerIndex());  // 22 and 3 for RMI/JMX
 		final int magic2 = buffer.getUnsignedByte(buffer.readerIndex() + 1);		
 		if(log.isDebugEnabled()) log.debug("\n\t  MAGIC:" + new String(new byte[]{(byte)magic1, (byte)magic2}) + "\n");
 		if (!isHttp(magic1, magic2)) {
