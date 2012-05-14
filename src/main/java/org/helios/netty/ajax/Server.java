@@ -133,7 +133,6 @@ public class Server {
 		HttpStaticFileServerHandler.contentRoot = root;
 		isock = new InetSocketAddress(iface, port);
 		MetricCollector collector = MetricCollector.getInstance(5000);
-		
 		bossPool = ThreadPoolFactory.newCachedThreadPool(getClass().getPackage().getName(), "boss");
 		workerPool =  ThreadPoolFactory.newCachedThreadPool(getClass().getPackage().getName(), "worker");
 		pipelineFactory = new ServerPipelineFactory(getPipelineModifiers());
@@ -143,8 +142,6 @@ public class Server {
 		bstrap.setPipelineFactory(pipelineFactory);
 		bstrap.bind(isock);
 		LOG.info("Netty-Ajax Server Started with Root [" + contentRoot + "]");		
-		//new MemoryReporter(5).start();
-		
 		try { Thread.currentThread().join(); } catch (Exception e) {
 			e.printStackTrace(System.err);
 		}

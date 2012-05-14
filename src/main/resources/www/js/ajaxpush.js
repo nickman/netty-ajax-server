@@ -210,6 +210,13 @@
 			$('#controlButton').click();
 		}
 		//addCharts();
+		
+//		$('#displayChart').append('<div id="mysvg" style="width:400;height:300;" class="chartplaceholder"></div>');
+//		$('#mysvg').svg();
+//		$('#mysvg').load('svg/savant.svg');
+//		$('#mysvg').append('<span class="svgresizer, ui-icon ui-icon-circle-triangle-s"></span>');
+//		$('#mysvg').resizable().draggable();
+		
 	} catch (e) {
 		//console.error(e);
 		//console.dir(e);

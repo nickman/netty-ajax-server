@@ -173,6 +173,13 @@ div.chartplaceholder {
  	
 }
 
+.svgresizer {
+	position:absolute;
+	bottom: 0;
+	z-index: 99999
+	right:0px; 
+}
+
 .mtree {
 	position:absolute; 
 	top:0; 
