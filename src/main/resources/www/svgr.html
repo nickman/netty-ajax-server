@@ -1,0 +1,60 @@
+<html>
+	<head>
+		<title>Netty Ajax Server</title>
+		<script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+		<script type="text/javascript" src="ui/js/jquery-ui-1.8.19.custom.min.js"></script>	
+		<script type="text/javascript" src="js/jquery.dateFormat-1.0.js"></script>
+		<script type="text/javascript" src="js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="js/jquery.metadata.js"></script>
+		<script type="text/javascript" src="js/Class-0.0.2.min.js"></script>
+		<script type="text/javascript" src="dynatree/jquery.dynatree.min.js"></script>
+		<script type="text/javascript" src="prettify/prettify.js"></script>
+		<script type="text/javascript" src="flot/jquery.flot.js"></script>
+		<script type="text/javascript" src="flot/jquery.flot.pie.js"></script>
+		<script type="text/javascript" src="flot/jquery.flot.resize.js"></script>
+		<script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+ 		<script type="text/javascript" src="svg/raphael-min.js"></script>
+		<script type="text/javascript" src="svg/raphael-svg-import.js"></script>
+		
+		
+		
+		
+		
+		
+		
+		
+		<link type="text/css" href="css/basic.css" rel="stylesheet" media="all"/>
+		<link type="text/css" href="ui/css/cupertino/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
+		<link type="text/css" href="prettify/prettify.css" rel="stylesheet" />
+		<link type='text/css' href='dynatree/skin/ui.dynatree.css' rel='stylesheet'>	
+		<link type='text/css' href='svg/jquery.svg.css' rel='stylesheet'>
+			
+		<script type="text/javascript">
+		var svg = null;
+		var svg2 = null;
+		var g = null;
+		var root = null;
+		var scale = 1;
+		var paper =  null;
+			$(function(){
+				paper = Raphael("displayChart", 400, 300);
+				
+			});
+		</script>			
+			
+			
+	</head>
+	<body id="main">
+		
+
+		
+		
+		<div id="display" class="ui-widget-content output-content" >
+			<h3 class="ui-widget-header">Output</h3>
+			<div id="displayRaw" style="display: none;"></div>
+			<div id="displayChart"></div>
+		</div>
+		
+
+	</body>
+</html>

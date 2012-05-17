@@ -201,6 +201,15 @@ div.chartplaceholder {
 	z-index: 99999;
 }
 
+.vborder {
+	border: medium;
+	border-top:1px solid #0E5491;
+	border-bottom:1px solid #0E5491;
+	border-right:1px solid #0E5491;
+	border-left:1px solid #0E5491;
+ 	border-collapse:collapse;	
+}
+
 
 table.legend {
 }
