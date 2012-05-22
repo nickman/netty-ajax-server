@@ -55,7 +55,8 @@ public class SocketSubmissionHandler extends SimpleChannelHandler {
 		if(log.isDebugEnabled()) log.debug("\n\tProcessing Metric [" + metric + "]\n");
 		try {
 			String[] frags = metric.split(":");
-			long value = Long.parseLong(frags[1].trim());
+			Double d = new Double(frags[1].trim());
+			long value = d.longValue();
 			MetricCollector.getInstance().submitMetric(frags[0], value);
 			AtomicInteger counter = (AtomicInteger) ctx.getAttachment();
 			if(counter==null) {
@@ -63,9 +64,10 @@ public class SocketSubmissionHandler extends SimpleChannelHandler {
 				ctx.setAttachment(counter);
 			}
 			counter.incrementAndGet();
-			} catch (Exception ex) {
-				ex.printStackTrace(System.err);
-			}
+			MetricCollector.getInstance().submitMetric(frags[0], value);
+		} catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
 		super.messageReceived(ctx, e);
 	}
 	
