@@ -26,7 +26,11 @@ package org.helios.netty.ajax;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
@@ -149,7 +153,14 @@ public class Server {
 	
 	protected Map<String, PipelineModifier> getPipelineModifiers() {
 		Map<String, PipelineModifier> map = new ConcurrentHashMap<String, PipelineModifier>();
-		Reflections ref = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forClassLoader()));
+		Set<URL> urls = new HashSet<URL>();
+		for(Iterator<URL> urlIter = ClasspathHelper.forClassLoader().iterator(); urlIter.hasNext();) {
+			URL url = urlIter.next();
+			if(url.toString().toLowerCase().endsWith(".jar") || !url.toString().toLowerCase().contains(".")) {
+				urls.add(url);
+			}
+		}
+		Reflections ref = new Reflections(new ConfigurationBuilder().setUrls(urls));
 		for(Class<?> clazz: ref.getTypesAnnotatedWith(URIHandler.class)) {
 			if(PipelineModifier.class.isAssignableFrom(clazz)) {
 				URIHandler uhandler = clazz.getAnnotation(URIHandler.class);
