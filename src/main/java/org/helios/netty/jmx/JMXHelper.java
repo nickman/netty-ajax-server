@@ -24,7 +24,23 @@
  */
 package org.helios.netty.jmx;
 
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.RMISocketFactory;
+import java.util.Collections;
+import java.util.Map;
+
+import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
 
 /**
  * <p>Title: JMXHelper</p>
@@ -45,6 +61,53 @@ public class JMXHelper {
 			return new ObjectName(str.toString());
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to create object name for [" + str + "]");
+		}
+	}
+	
+	/**
+	 * Creates, registers and starts a JMXConnectorServer
+	 * @param bindInterface The interface to bind to
+	 * @param serviceURL The JMXService URL
+	 * @param server The MBeanServer to expose
+	 */
+	public static void fireUpJMXServer(final String bindInterface, final int serverSocketBacklog, CharSequence serviceURL, MBeanServer server) {
+		try {
+			fireUpJMXServer(bindInterface, serverSocketBacklog, new JMXServiceURL(serviceURL.toString()), server);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to start JMXServer on [" + serviceURL + "]", e);
+		}
+	}
+	
+	
+	/**
+	 * Creates, registers and starts a JMXConnectorServer
+	 * @param bindInterface The interface to bind to
+	 * @param serviceURL The JMXService URL
+	 * @param server The MBeanServer to expose
+	 */
+	public static void fireUpJMXServer(final String bindInterface, final int serverSocketBacklog, JMXServiceURL serviceURL, MBeanServer server) {
+		try {
+			Map<String, Object> env = Collections.singletonMap("jmx.remote.rmi.server.socket.factory", (Object)new RMISocketFactory(){
+				public ServerSocket createServerSocket(int port) throws IOException {
+					return new ServerSocket(port, serverSocketBacklog, InetAddress.getByName(bindInterface));
+				}
+				public Socket createSocket(String host, int port) throws IOException {
+					return new Socket(host, port);
+				}
+			});
+			JMXConnectorServer jmxServer = JMXConnectorServerFactory.newJMXConnectorServer(serviceURL, env, server);
+			server.registerMBean(jmxServer, JMXHelper.objectName("org.helios.netty:service=JMXConnectorServer,url=" + ObjectName.quote(serviceURL.toString())));
+			jmxServer.start();
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to start JMXServer on [" + serviceURL + "]", e);
+		}
+	}
+	
+	public static void fireUpRMIRegistry(final String bindInterface,  final int port)  {
+		try {
+			LocateRegistry.createRegistry(port);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to start RMIRegistry on [" + bindInterface + ":" + port + "]", e);
 		}
 	}
 }

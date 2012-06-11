@@ -22,32 +22,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org. 
  *
  */
-package org.helios.netty.jmx;
+package org.helios.netty.examples.state;
+
+import org.jboss.netty.channel.ChannelHandler;
 
 /**
- * <p>Title: MetricCollectorMXBean</p>
- * <p>Description: The MXBean interface for the {@link MetricCollector}</p> 
+ * <p>Title: ChannelHandlerProvider</p>
+ * <p>Description: A common parent type for providers of shareable and non-shareable channel handler providers</p> 
  * <p>Company: Helios Development Group LLC</p>
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
- * <p><code>org.helios.netty.jmx.MetricCollectorMXBean</code></p>
+ * <p><code>org.helios.netty.examples.state.ChannelHandlerProvider</code></p>
  */
-public interface MetricCollectorMXBean {
+
+public interface ChannelHandlerProvider {
 	/**
-	 * Returns a JSON string of all the registered metric names 
-	 * @return the metricNames
+	 * Returns a channel handler for insertion into a pipeline
+	 * @return a channel handler 
 	 */
-	public String getMetricNames();
+	public ChannelHandler getHandler();
 	
 	/**
-	 * Submits a new metric and value
-	 * @param metricName The metric name
-	 * @param value The metric value
+	 * Returns the channel handler name
+	 * @return the channel handler name
 	 */
-	public void submitMetric(String metricName, long value);
-	
-	/**
-	 * Returns the number of dropped metrics
-	 * @return the number of dropped metrics
-	 */
-	public long getDroppedMetricCount();
+	public String getHandlerName();	
 }

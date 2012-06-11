@@ -34,12 +34,14 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -115,6 +117,10 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	protected ScheduledFuture<?> handle = null;
 	/** The scheduler */
 	protected final ScheduledThreadPoolExecutor scheduler;
+	/**  A map of remotely submitted metrics keyed by the address that they came from */
+	protected final Map<SocketAddress, Map<String, Long>> pendingRemoteMetrics = new ConcurrentHashMap<SocketAddress, Map<String, Long>> ();
+	/** Dropped metric counter */
+	protected final AtomicLong dropCounter = new AtomicLong(0);
 	
 	/** The singleton instance */
 	private static volatile MetricCollector instance = null;
@@ -189,6 +195,27 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 				log.error("Failed to submit metric", e);
 			}			
 		}
+	}
+	
+	
+	/**
+	 * Submits a map of metrics from a remote socket submitter
+	 * @param clientSocket The address of the submitting socket
+	 * @param metrics A map of metric values keyed by metric name
+	 */
+	public void submitMetrics(SocketAddress clientSocket , Map<String, Long> metrics) {
+		submitMetrics(metrics);
+		if(pendingRemoteMetrics.put(clientSocket, metrics)!=null) {
+			dropCounter.incrementAndGet();
+		}
+	}
+
+	/**
+	 * Returns the number of dropped metrics
+	 * @return the number of dropped metrics
+	 */
+	public long getDroppedMetricCount() {
+		return dropCounter.get();
 	}
 	
 	/**
@@ -298,7 +325,8 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 			final JSONObject envelope = new JSONObject();
 			envelope.put("metrics", json);
 			notif.setUserData(json);
-			json.put("ts", System.currentTimeMillis()); 
+			pushRemoteMetrics(json);
+			json.put("ts", System.currentTimeMillis());			
 			json.put("heap", processMemoryUsage(memMxBean.getHeapMemoryUsage()));
 			json.put("non-heap", processMemoryUsage(memMxBean.getNonHeapMemoryUsage()));	
 			json.put("thread-states*", new JSONObject(getThreadStates()));
@@ -315,8 +343,28 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	}
 	
 	/**
+	 * Retrieves the unsubmitted remote metrics and packages them into the passed json object
+	 * @param json The JSON Object to package the metrics into
+	 */
+	protected void pushRemoteMetrics(final JSONObject json) {
+		Map<SocketAddress, Map<String, Long>> tmpMap = new HashMap<SocketAddress, Map<String, Long>>(pendingRemoteMetrics);
+		pendingRemoteMetrics.clear();
+		for(Map.Entry<SocketAddress, Map<String, Long>> entry: tmpMap.entrySet()) {
+			for(Map.Entry<String, Long> mentry: entry.getValue().entrySet()) {
+				try {
+					insertMetric(mentry.getKey(), mentry.getValue(), json);
+				} catch (JSONException e) {
+				}
+			}
+		}
+		try {
+			insertMetric("metriccollector.drops", getDroppedMetricCount(), json);
+		} catch (Exception e) {}
+		tmpMap.clear();
+	}
+	/**
 	 * Collects metric names from participating metric providers
-	 * @throws JSONException 
+	 * @throws JSONException thrown on any json exception 
 	 */
 	protected void updateMetricNames() throws JSONException {
 		Notification notif = new Notification(MetricProvider.METRIC_NAME_NOTIFICATION, OBJECT_NAME, tick.incrementAndGet(), System.currentTimeMillis());

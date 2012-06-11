@@ -28,6 +28,7 @@ import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -47,6 +48,9 @@ public class SharedChannelGroup implements ChannelGroup, ChannelFutureListener {
 	private static volatile SharedChannelGroup instance = null;
 	/** The singleton instance ctor lock */
 	private static final Object lock = new Object();
+	/** Instance logger */
+	protected final Logger log = Logger.getLogger(getClass());
+
 	
 	/** The core channel group */
 	private ChannelGroup channelGroup = new DefaultChannelGroup("Netty Ajax Server Channel Group");
@@ -89,6 +93,8 @@ public class SharedChannelGroup implements ChannelGroup, ChannelFutureListener {
 	 * @see java.util.Set#add(java.lang.Object)
 	 */
 	public boolean add(Channel channel) {
+		log.info("Adding Channel From [" + channel.getPipeline().getLast().getClass().getSimpleName() + "]");
+		
 		return channelGroup.add(channel);
 	}
 	

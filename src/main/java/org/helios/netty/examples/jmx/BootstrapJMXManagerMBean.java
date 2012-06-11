@@ -22,32 +22,51 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org. 
  *
  */
-package org.helios.netty.jmx;
+package org.helios.netty.examples.jmx;
+
+import java.util.Map;
 
 /**
- * <p>Title: MetricCollectorMXBean</p>
- * <p>Description: The MXBean interface for the {@link MetricCollector}</p> 
+ * <p>Title: BootstrapJMXManagerMBean</p>
+ * <p>Description: JMX MBean interface for {@link BootstrapJMXManager}</p> 
  * <p>Company: Helios Development Group LLC</p>
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
- * <p><code>org.helios.netty.jmx.MetricCollectorMXBean</code></p>
+ * <p><code>org.helios.netty.examples.jmx.BootstrapJMXManagerMBean</code></p>
  */
-public interface MetricCollectorMXBean {
+
+public interface BootstrapJMXManagerMBean {
 	/**
-	 * Returns a JSON string of all the registered metric names 
-	 * @return the metricNames
+	 * Returns the map of channel options
+	 * @return the map of channel options
 	 */
-	public String getMetricNames();
+	public Map<String, Object> getChannelOptions();
 	
 	/**
-	 * Submits a new metric and value
-	 * @param metricName The metric name
-	 * @param value The metric value
+	 * Returns the option value for the passed option name
+	 * @param name The name of the channel option
+	 * @return The value of the channel option or null if it has not been set
 	 */
-	public void submitMetric(String metricName, long value);
+	public Object getChannelOption(String name);
 	
 	/**
-	 * Returns the number of dropped metrics
-	 * @return the number of dropped metrics
+	 * Sets a channel option
+	 * @param name The name of the option to set
+	 * @param value The value to set the option to
 	 */
-	public long getDroppedMetricCount();
+	public void setChannelOption(String name, int value);
+	
+	/**
+	 * Sets a channel option
+	 * @param name The name of the option to set
+	 * @param value The value to set the option to
+	 */
+	public void setChannelOption(String name, boolean value);
+	
+	/**
+	 * Sets a channel option
+	 * @param name The name of the option to set
+	 * @param value The value to set the option to
+	 */
+	public void setChannelOption(String name, String value);
+
 }

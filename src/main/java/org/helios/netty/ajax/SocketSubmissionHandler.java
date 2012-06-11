@@ -24,6 +24,8 @@
  */
 package org.helios.netty.ajax;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -51,22 +53,18 @@ public class SocketSubmissionHandler extends SimpleChannelHandler {
 	 */
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-		String metric = (String)e.getMessage();
-		if(log.isDebugEnabled()) log.debug("\n\tProcessing Metric [" + metric + "]\n");
-		try {
-			String[] frags = metric.split(":");
-			Double d = new Double(frags[1].trim());
-			long value = d.longValue();
-			MetricCollector.getInstance().submitMetric(frags[0], value);
-			AtomicInteger counter = (AtomicInteger) ctx.getAttachment();
-			if(counter==null) {
-				counter = new AtomicInteger(0);
-				ctx.setAttachment(counter);
-			}
-			counter.incrementAndGet();
-			MetricCollector.getInstance().submitMetric(frags[0], value);
-		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
+		String metricLine = (String)e.getMessage();
+		String[] metrics = metricLine.split(",");
+		if(log.isDebugEnabled()) log.debug("\n\t==============\n\tProcessing Metrics\n\tCount:" + metrics.length + "\n\tAddress:" + e.getChannel().getRemoteAddress() + "\n\t==============\n");
+		Map<String, Long> metricMap = new HashMap<String, Long>(metrics.length);
+		for(String metric: metrics) {
+			try {
+				String[] frags = metric.split(":");
+				metricMap.put(frags[0], new Double(frags[1].trim()).longValue());
+			} catch (Exception ex) {}
+		}
+		if(!metricMap.isEmpty()) {
+			MetricCollector.getInstance().submitMetrics(e.getChannel().getRemoteAddress(), metricMap);
 		}
 		super.messageReceived(ctx, e);
 	}

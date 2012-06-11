@@ -22,32 +22,42 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org. 
  *
  */
-package org.helios.netty.jmx;
+package org.helios.netty.examples.util;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * <p>Title: MetricCollectorMXBean</p>
- * <p>Description: The MXBean interface for the {@link MetricCollector}</p> 
+ * <p>Title: Utils</p>
+ * <p>Description: Some generic utility functions</p> 
  * <p>Company: Helios Development Group LLC</p>
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
- * <p><code>org.helios.netty.jmx.MetricCollectorMXBean</code></p>
+ * <p><code>org.helios.netty.examples.util.Utils</code></p>
  */
-public interface MetricCollectorMXBean {
-	/**
-	 * Returns a JSON string of all the registered metric names 
-	 * @return the metricNames
-	 */
-	public String getMetricNames();
+
+public class Utils {
+	/** A set of primitive supporting classes */
+	@SuppressWarnings("unchecked")
+	public static final Set<Class<?>> have_primitives = Collections.unmodifiableSet(new HashSet<Class<?>>(Arrays.asList(
+			Byte.class, Boolean.class, Short.class, Integer.class, Long.class, Float.class, Double.class, Void.class 
+	)));
 	
 	/**
-	 * Submits a new metric and value
-	 * @param metricName The metric name
-	 * @param value The metric value
+	 * Returns the primitive for the passed class if applicable, otherwise returns the passed class
+	 * @param clazz The class to return the primitive for
+	 * @return a class
 	 */
-	public void submitMetric(String metricName, long value);
-	
-	/**
-	 * Returns the number of dropped metrics
-	 * @return the number of dropped metrics
-	 */
-	public long getDroppedMetricCount();
+	public static  Class<?> primitive(Class<?> clazz) {
+		if(have_primitives.contains(clazz)) {
+			try {
+				return (Class<?>)clazz.getDeclaredField("TYPE").get(null);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to get primitive for [" + clazz.getName() + "]", e);
+			}
+		} 
+		return clazz;
+	}
+
 }

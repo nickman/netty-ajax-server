@@ -22,32 +22,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org. 
  *
  */
-package org.helios.netty.jmx;
+package org.helios.netty.examples;
+
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.Channels;
+import org.jboss.netty.handler.codec.compression.ZlibEncoder;
 
 /**
- * <p>Title: MetricCollectorMXBean</p>
- * <p>Description: The MXBean interface for the {@link MetricCollector}</p> 
+ * <p>Title: ConditionalCompressionPipelineFactory</p>
+ * <p>Description: Example channel pipeline factory </p> 
  * <p>Company: Helios Development Group LLC</p>
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
- * <p><code>org.helios.netty.jmx.MetricCollectorMXBean</code></p>
+ * <p><code>org.helios.netty.examples.ConditionalCompressionPipelineFactory</code></p>
  */
-public interface MetricCollectorMXBean {
+
+public class ConditionalCompressionPipelineFactory implements ChannelPipelineFactory {
+
 	/**
-	 * Returns a JSON string of all the registered metric names 
-	 * @return the metricNames
+	 * {@inheritDoc}
+	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
 	 */
-	public String getMetricNames();
-	
-	/**
-	 * Submits a new metric and value
-	 * @param metricName The metric name
-	 * @param value The metric value
-	 */
-	public void submitMetric(String metricName, long value);
-	
-	/**
-	 * Returns the number of dropped metrics
-	 * @return the number of dropped metrics
-	 */
-	public long getDroppedMetricCount();
+	@Override
+	public ChannelPipeline getPipeline() throws Exception {
+		ChannelPipeline pipeline = Channels.pipeline();
+		/// Add all the pre-amble handlers 
+		//pipeline.addLast("Foo", new SomeHandler());
+		//pipeline.addLast("Bar", new SomeOtherHandler());
+		// etc.
+		pipeline.addLast("IAmTheDecider", new ConditionalCompressionHandler(1024, "MyCompressionHandler"));
+		pipeline.addLast("MyCompressionHandler", new ZlibEncoder());
+		return pipeline;
+	}
+
 }

@@ -59,6 +59,9 @@ import org.jboss.netty.util.CharsetUtil;
 public class ProtocolSwitch extends FrameDecoder {
 	/** The comma based string delimeter */
 	private static final ChannelBuffer COMMA_DELIM = ChannelBuffers.wrappedBuffer(new byte[] { ',' });
+	/** The semi-colon based string delimeter */
+	private static final ChannelBuffer SEMICOL_DELIM = ChannelBuffers.wrappedBuffer(new byte[] { ';' });
+	
 	/** The maximum frame size */
 	public static final int MAX_FRAME_SIZE = 65536;
 	/** Instance logger */
@@ -110,9 +113,7 @@ public class ProtocolSwitch extends FrameDecoder {
 				pipeline.addLast("decompressor", new ZlibDecoder(ZlibWrapper.GZIP));
 			}
 			List<ChannelBuffer> delims = new ArrayList<ChannelBuffer>();
-			delims.add(COMMA_DELIM);
-			Collections.addAll(delims, Delimiters.lineDelimiter());
-			Collections.addAll(delims, Delimiters.nulDelimiter());
+			delims.add(SEMICOL_DELIM);
 			pipeline.addLast("frameDecoder", new DelimiterBasedFrameDecoder(65536, true, true, delims.toArray(new ChannelBuffer[delims.size()])));
 			//pipeline.addLast("logger", new LoggingHandler(InternalLogLevel.INFO));
 			pipeline.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
@@ -120,11 +121,10 @@ public class ProtocolSwitch extends FrameDecoder {
 			pipeline.addLast("submission-handler", submissionHandler);
 			pipeline.sendUpstream(new UpstreamMessageEvent(channel, buffer, channel.getRemoteAddress()));
 			return null;
-		} else {
-			if(log.isDebugEnabled()) log.debug("Switching to HTTP");
-			ctx.getPipeline().remove(this);
-			return buffer.readBytes(buffer.readableBytes());
-		}								
+		} 
+		if(log.isDebugEnabled()) log.debug("Switching to HTTP");
+		ctx.getPipeline().remove(this);
+		return buffer.readBytes(buffer.readableBytes());
 	}
 	
 	/**
