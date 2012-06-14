@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1052.3622"
+   height="744.09448"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="Pipeline.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path3932"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3755">
+      <stop
+         style="stop-color:#cccccc;stop-opacity:1;"
+         offset="0"
+         id="stop3757" />
+      <stop
+         style="stop-color:#cccccc;stop-opacity:0;"
+         offset="1"
+         id="stop3759" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3755"
+       id="linearGradient5708"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.00358766,-0.99999356,0.99999356,0.00358766,308.26571,1.1059647)"
+       x1="61.434143"
+       y1="137.58228"
+       x2="673.81262"
+       y2="137.58228" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.1302328"
+     inkscape:cx="369.57619"
+     inkscape:cy="372.04724"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1010"
+     inkscape:window-x="1920"
+     inkscape:window-y="26"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-308.2677)">
+    <rect
+       style="fill:url(#linearGradient5708);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2985"
+       width="365.41147"
+       height="131.83125"
+       x="453.27042"
+       y="-298.13388"
+       transform="matrix(0.00358766,0.99999356,-0.99999356,0.00358766,0,0)"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <g
+       id="g5793"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         transform="matrix(0.00358766,0.99999356,-0.99999356,0.00358766,0,0)"
+         ry="17.695469"
+         y="-338.00424"
+         x="615.18396"
+         height="94.670769"
+         width="42.46912"
+         id="rect3765-1"
+         style="fill:#ff5555;stroke:#000000;stroke-width:1;stroke-opacity:1"
+         rx="17.695469" />
+      <flowRoot
+         transform="matrix(0.99597025,-0.08968424,0.08968424,0.99597025,-35.224367,156.44536)"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+         id="flowRoot3767-4"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3769-6"><rect
+             style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#0000ff;font-family:Purisa;-inkscape-font-specification:Purisa"
+             y="499.897"
+             x="249.50612"
+             height="45.123447"
+             width="128.29214"
+             id="rect3771-4" /></flowRegion><flowPara
+           style="font-weight:bold;fill:#0000ff;-inkscape-font-specification:Purisa Bold"
+           id="flowPara3773-4">Upstream</flowPara></flowRoot>    </g>
+    <g
+       id="g3822"
+       transform="matrix(0.00358766,0.99999356,-0.99999356,0.00358766,975.86823,388.72246)"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         ry="17.695469"
+         y="751.0968"
+         x="166.33742"
+         height="94.670769"
+         width="42.46912"
+         id="rect3765-4"
+         style="fill:#800080;stroke:#000000;stroke-width:1;stroke-opacity:1"
+         rx="17.695469" />
+      <flowRoot
+         transform="matrix(-0.08611046,-0.9962856,0.9962856,-0.08611046,-300.5501,1130.8865)"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffd42a;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+         id="flowRoot3767-3"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3769-3"><rect
+             style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffd42a;font-family:Purisa;-inkscape-font-specification:Purisa"
+             y="499.897"
+             x="249.50612"
+             height="45.123447"
+             width="128.29214"
+             id="rect3771-5" /></flowRegion><flowPara
+           style="font-weight:bold;fill:#ffd42a;-inkscape-font-specification:Purisa Bold"
+           id="flowPara3773-8">Upstream</flowPara><flowPara
+           id="flowPara3820"
+           style="font-weight:bold;fill:#ffd42a;-inkscape-font-specification:Purisa Bold">Downstream</flowPara></flowRoot>    </g>
+    <g
+       id="g5715"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         ry="17.695469"
+         transform="matrix(0.00358766,0.99999356,-0.99999356,0.00358766,0,0)"
+         y="-326.00424"
+         x="746.13043"
+         height="94.670769"
+         width="42.46912"
+         id="rect3765-8"
+         style="fill:#00ffff;stroke:#000000;stroke-width:1;stroke-opacity:1"
+         rx="17.695469" />
+      <flowRoot
+         transform="matrix(0.99597025,-0.08968424,0.08968424,0.99597025,-50.761758,285.40534)"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+         id="flowRoot3767-49"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3769-4"><rect
+             style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ff0000;font-family:Purisa;-inkscape-font-specification:Purisa"
+             y="499.897"
+             x="249.50612"
+             height="45.123447"
+             width="128.29214"
+             id="rect3771-2" /></flowRegion><flowPara
+           style="font-weight:bold;fill:#ff0000;-inkscape-font-specification:Purisa Bold"
+           id="flowPara3773-20">Downstream</flowPara></flowRoot>    </g>
+    <g
+       id="g5820"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         transform="matrix(0.00759367,0.99997117,-0.99999856,0.00169498,0,0)"
+         y="-283.96771"
+         x="429.88855"
+         height="110.59612"
+         width="26.75293"
+         id="rect3894"
+         style="fill:#00ff00;stroke:#000000;stroke-width:1.0000087;stroke-opacity:1" />
+      <flowRoot
+         transform="matrix(0.99994055,0.0109035,-0.0109035,0.99994055,134.47518,121.94501)"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         id="flowRoot3896"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3898"><rect
+             y="313.20981"
+             x="69.897102"
+             height="63.70369"
+             width="216.7695"
+             id="rect3900" /></flowRegion><flowPara
+           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Purisa;-inkscape-font-specification:Purisa Bold"
+           id="flowPara3902">Channel</flowPara></flowRoot>    </g>
+    <path
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#8ec9ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4.13410282;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+       d="m 400.36001,583.40528 c -21.58092,0 -41.13624,2.02272 -55.50576,5.36888 -7.18477,1.67307 -13.06292,3.672 -17.27165,5.98911 -4.20873,2.3171 -6.7725,5.02333 -6.7725,7.90795 0,5.16027 7.82489,9.52846 19.67249,12.77289 10.65673,2.91831 24.98688,4.96265 41.1366,5.89219 l -30.74495,14.8468 2.54416,2.13204 72.52657,-17.40524 c 15.28227,-1.23072 28.47323,-3.50737 38.05495,-6.57058 9.6596,-3.08812 15.90998,-7.07593 15.90998,-11.6681 0,-2.88462 -2.52793,-5.59085 -6.73666,-7.90795 -4.20873,-2.31711 -10.12271,-4.31604 -17.30748,-5.98911 -14.36952,-3.34616 -33.92485,-5.36888 -55.50575,-5.36888 z m 0,2.55845 c 21.02931,0 40.07723,2.01621 53.64242,5.17506 6.7826,1.57943 12.19884,3.44304 15.80248,5.42702 3.60365,1.98398 5.375,4.02546 5.375,6.10541 0,3.31109 -4.68553,6.61475 -13.58082,9.45853 -8.89529,2.84377 -21.75102,5.09317 -36.72912,6.27984 l -0.3225,0.0387 -0.28666,0.0581 -58.94577,14.14906 23.43497,-11.31923 4.15666,-2.01575 -5.55416,-0.2132 c -17.91239,-0.71923 -33.65883,-2.92129 -44.71993,-5.95034 -11.0611,-3.02906 -17.05664,-6.76513 -17.05664,-10.48579 0,-2.07995 1.77134,-4.12142 5.37499,-6.1054 3.60365,-1.98399 9.01989,-3.8476 15.80248,-5.42703 13.5652,-3.15884 32.57727,-5.17505 53.6066,-5.17505 z"
+       id="path7389-6"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot5546"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+       transform="translate(-477.77767,10.099045)"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><flowRegion
+         id="flowRegion5548"><rect
+           id="rect5550"
+           width="149.52672"
+           height="70.781876"
+           x="654.73236"
+           y="459.19742"
+           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Purisa;-inkscape-font-specification:Purisa" /></flowRegion><flowPara
+         id="flowPara5552"
+         style="font-weight:bold;-inkscape-font-specification:Purisa Bold">Pipeline</flowPara></flowRoot>    <g
+       id="g5800"
+       transform="translate(1.7695454,15.925922)"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <path
+         inkscape:connector-curvature="0"
+         id="path7389"
+         d="m 113.251,363.0967 c 23.62114,0 45.02522,3.0005 60.75322,7.96417 7.86401,2.48183 14.29787,5.44704 18.90449,8.88422 4.60662,3.43718 7.41276,7.45159 7.41276,11.73062 0,7.65474 -8.56463,14.13449 -21.53229,18.94725 -11.66422,4.32902 -27.34914,7.36158 -45.02563,8.74047 l 33.65156,22.02366 -2.78469,3.16267 -79.383165,-25.81887 c -16.727041,-1.82563 -31.165063,-5.2028 -41.652628,-9.74676 -10.572808,-4.5809 -17.414094,-10.49641 -17.414094,-17.30842 0,-4.27903 2.766915,-8.29344 7.373536,-11.73062 4.606621,-3.43718 11.079706,-6.40239 18.94371,-8.88422 15.728008,-4.96367 37.132079,-7.96417 60.753221,-7.96417 z m 0,3.7952 c -23.017403,0 -43.866093,2.99083 -58.713733,7.67666 -7.423813,2.34291 -13.352098,5.10739 -17.296431,8.05042 -3.944333,2.94303 -5.883139,5.97135 -5.883139,9.05673 0,4.91166 5.128491,9.81231 14.864733,14.03074 9.736242,4.21844 23.807344,7.5552 40.201453,9.3155 l 0.352988,0.0575 0.313768,0.0862 64.518431,20.98866 -25.65049,-16.79089 -4.54961,-2.99016 6.07923,-0.31627 c 19.60581,-1.0669 36.84092,-4.33344 48.94772,-8.82672 12.10681,-4.49327 18.66917,-10.03535 18.66917,-15.55457 0,-3.08538 -1.93881,-6.1137 -5.88314,-9.05673 -3.94434,-2.94303 -9.87262,-5.70751 -17.29643,-8.05042 -14.84764,-4.68583 -35.65712,-7.67666 -58.67452,-7.67666 z"
+         style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#8ec9ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4.13410282;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans" />
+      <flowRoot
+         transform="translate(-607.79507,-80.655666)"
+         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+         id="flowRoot5546-4"
+         xml:space="preserve"><flowRegion
+           id="flowRegion5548-3"><rect
+             style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Purisa;-inkscape-font-specification:Purisa"
+             y="459.19742"
+             x="654.73236"
+             height="70.781876"
+             width="149.52672"
+             id="rect5550-3" /></flowRegion><flowPara
+           style="font-size:12px;font-weight:bold;-inkscape-font-specification:Purisa Bold"
+           id="flowPara5552-9">Downstreams</flowPara><flowPara
+           id="flowPara5581"
+           style="font-size:12px;font-weight:bold;-inkscape-font-specification:Purisa Bold">Only, if you please!</flowPara></flowRoot>    </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot5546-4-6"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+       transform="translate(-353.56897,132.14188)"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><flowRegion
+         id="flowRegion5548-3-6"><rect
+           id="rect5550-3-5"
+           width="199.07405"
+           height="73.436211"
+           x="654.73236"
+           y="459.19742"
+           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Purisa;-inkscape-font-specification:Purisa" /></flowRegion><flowPara
+         style="font-size:10px;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Purisa Bold"
+         id="flowPara5827">Did it get chilly</flowPara><flowPara
+         style="font-size:10px;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Purisa Bold"
+         id="flowPara5831">in here ?</flowPara></flowRoot>    <g
+       id="g5662"
+       transform="translate(-442.38673,-179.60901)"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <path
+         inkscape:connector-curvature="0"
+         id="path7389-6-2"
+         d="m 530.42169,692.67481 c 20.38077,0 38.84859,1.85976 52.41901,4.93633 6.78521,1.53828 12.33647,3.37616 16.31115,5.50659 3.97468,2.13042 6.39588,4.61862 6.39588,7.27084 0,4.74453 -7.38974,8.76079 -18.57848,11.74383 -10.0641,2.68319 -23.59734,4.56283 -38.84894,5.41748 l 29.03518,13.65065 -2.40268,1.96027 -68.49328,-16.00297 c -14.4324,-1.13156 -26.8898,-3.22479 -35.93866,-6.04121 -9.12242,-2.83932 -15.02521,-6.50585 -15.02521,-10.72805 0,-2.65222 2.38735,-5.14042 6.36202,-7.27084 3.97468,-2.13043 9.55978,-3.96831 16.34499,-5.50659 13.57042,-3.07657 32.03825,-4.93633 52.41902,-4.93633 z m 0,2.35233 c -19.85985,0 -37.84849,1.85377 -50.65931,4.75812 -6.40541,1.45218 -11.52044,3.16565 -14.92368,4.98979 -3.40325,1.82414 -5.07609,3.70114 -5.07609,5.61352 0,3.04433 4.42496,6.08183 12.82557,8.69649 8.40061,2.61466 20.54142,4.68284 34.68657,5.7739 l 0.30456,0.0356 0.27073,0.0534 55.66772,13.00913 -22.13172,-10.40728 -3.92551,-1.85335 5.24529,-0.19603 c 16.91626,-0.66128 31.78702,-2.68593 42.233,-5.47094 10.44598,-2.78502 16.1081,-6.22009 16.1081,-9.64099 0,-1.91238 -1.67284,-3.78938 -5.07608,-5.61352 -3.40325,-1.82414 -8.51828,-3.53761 -14.92369,-4.98979 -12.81082,-2.90435 -30.76561,-4.75812 -50.62546,-4.75812 z"
+         style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#8ec9ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4.13410282;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans" />
+      <flowRoot
+         transform="translate(-187.16839,248.02559)"
+         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+         id="flowRoot5546-4-6-3"
+         xml:space="preserve"><flowRegion
+           id="flowRegion5548-3-6-2"><rect
+             style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Purisa;-inkscape-font-specification:Purisa"
+             y="459.19742"
+             x="654.73236"
+             height="73.436211"
+             width="199.07405"
+             id="rect5550-3-5-1" /></flowRegion><flowPara
+           id="flowPara5581-3-8"
+           style="font-size:10px;font-weight:bold;-inkscape-font-specification:Purisa Bold">I go <flowSpan
+   id="flowSpan5660"
+   style="fill:#800000">both</flowSpan> ways . . . </flowPara></flowRoot>    </g>
+    <g
+       transform="translate(-102.69587,-54.635882)"
+       id="g5715-4"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         ry="17.695469"
+         transform="matrix(0.00358766,0.99999356,-0.99999356,0.00358766,0,0)"
+         y="-326.00424"
+         x="746.13043"
+         height="94.670769"
+         width="42.46912"
+         id="rect3765-8-3"
+         style="fill:#00ffff;stroke:#000000;stroke-width:1;stroke-opacity:1"
+         rx="17.695469" />
+      <flowRoot
+         transform="matrix(0.99597025,-0.08968424,0.08968424,0.99597025,-50.761758,285.40534)"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+         id="flowRoot3767-49-8"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3769-4-8"><rect
+             style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ff0000;font-family:Purisa;-inkscape-font-specification:Purisa"
+             y="499.897"
+             x="249.50612"
+             height="45.123447"
+             width="128.29214"
+             id="rect3771-2-3" /></flowRegion><flowPara
+           style="font-weight:bold;fill:#ff0000;-inkscape-font-specification:Purisa Bold"
+           id="flowPara3773-20-6">Downstream</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(17.67036,-243.09263)"
+       id="g5715-4-8"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         ry="17.695469"
+         transform="matrix(0.00358766,0.99999356,-0.99999356,0.00358766,0,0)"
+         y="-326.00424"
+         x="746.13043"
+         height="94.670769"
+         width="42.46912"
+         id="rect3765-8-3-6"
+         style="fill:#00ffff;stroke:#000000;stroke-width:1;stroke-opacity:1"
+         rx="17.695469" />
+      <flowRoot
+         transform="matrix(0.99597025,-0.08968424,0.08968424,0.99597025,-50.761758,285.40534)"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+         id="flowRoot3767-49-8-0"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3769-4-8-0"><rect
+             style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ff0000;font-family:Purisa;-inkscape-font-specification:Purisa"
+             y="499.897"
+             x="249.50612"
+             height="45.123447"
+             width="128.29214"
+             id="rect3771-2-3-0" /></flowRegion><flowPara
+           style="font-weight:bold;fill:#ff0000;-inkscape-font-specification:Purisa Bold"
+           id="flowPara3773-20-6-9">Downstream</flowPara></flowRoot>    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Lend)"
+       d="m 267.96711,456.00669 -11.06328,71.6019 -39.00903,52.2912 -3.30927,138.02783 27.06343,50.34491 -5.97965,69.919"
+       id="path3923"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/home/nwhitehead/hprojects/netty-ajax-server/images/downstream-pipeline.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+</svg>

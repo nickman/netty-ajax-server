@@ -1,0 +1,215 @@
+  System.out.println("=======decode=======");
+                
+  String s="[0,{'1':{'2':{'3':{'4':[5,{'6':7}]}}}}]";
+  Object obj=JSONValue.parse(s);
+  JSONArray array=(JSONArray)obj;
+  System.out.println("======the 2nd element of array======");
+  System.out.println(array.get(1));
+  System.out.println();
+                
+  JSONObject obj2=(JSONObject)array.get(1);
+  System.out.println("======field \"1\"==========");
+  System.out.println(obj2.get("1"));
+
+  s="{}";
+  obj=JSONValue.parse(s);
+  System.out.println(obj);                
+
+  String s="{\"key\":\"Value\"}";
+  // JSONValue.parseStrict()
+  // can be use to be sure that the input is wellformed
+  Object obj=JSONValue.parseStrict(s);
+  JSONObject obj3=(JSONObject)obj;
+  System.out.println("====== Object content ======");
+  System.out.println(obj3.get("key"));
+  System.out.println();
+  
+  
+    //import net.minidev.json.JSONObject;
+  
+  // Json Object is an HashMap<String, Object> extends
+  JSONObject obj = new JSONObject();
+  obj.put("name", "foo");
+  obj.put("num", 100);
+  obj.put("balance", 1000.21);
+  obj.put("is_vip", true);
+  obj.put("nickname",null);
+
+  System.out.println("Standard RFC4627 JSON");
+  System.out.println(obj.toJSONString());
+
+  System.out.println("Compacted JSON Value");
+  System.out.println(obj.toJSONString(JSONStyle.MAX_COMPRESS));
+
+  // if obj is an common map you can use:
+
+  System.out.println("Standard RFC4627 JSON");
+  System.out.println(JSONValue.toJSONString(obj));
+
+  System.out.println("Compacted JSON Value");
+  System.out.println(JSONValue.toJSONString(obj, JSONStyle.MAX_COMPRESS));
+
+Result:
+
+Standard RFC4627 JSON:
+
+{"balance":1000.21,"num":100,"nickname":null,"is_vip":true,"name":"foo"}
+
+Compacted JSON:
+
+{balance:1000.21,num:100,nickname:null,is_vip:true,name:foo}
+
+
+Best Practices
+===========
+
+Json-Smart has been designed to deliver impressive performance. For best results, I recommend using it as follows:
+json-simple migration best practice
+
+allwai
+Using Json as internal storage format
+
+if you are using json as internal data format, compresse it before you store it, compressed json will stil be humain-redable but will take less space and will parsed and serialized faster.
+Output Compressed json
+
+To export a compressed JSON:
+
+Object value;
+JSONValue.toJSONString(value, JSONStyle.MAX_COMPRESS);
+
+Or from a string json
+
+String json;
+JSONValue.compress(json);
+
+Output non compressed RFC4627 json
+
+Data out of the system must be encoded in json RFC4627 to avoid compatibility issues. To export a JSON has the standard RFC4627:
+
+Object value;
+JSONValue.toJSONString(value, JSONStyle.NO_COMPRESS)
+
+Or from a string json
+
+String json;
+JSONValue.uncompress(json)
+
+Mapping
+=======
+    JSON Smart Parser Configuration
+
+In addition to high-performance the JSON Smart parser offers a rich set of configuration options for specifying strictness and Java type mapping. These are passed as one or more constant flags to the JSONParser and JSONParserStream constructors.
+Predefined parser strictness modes
+
+The following set of constants controls the strictness of the JSON Smart parser.
+MODE_RFC4627
+
+Specifies strict parsing according to the JSON standard (RFC 4627).
+MODE_PERMISSIVE
+
+Specifies a "Smart" mode which accepts a wide range of non-standard JSON syntax and results in faster parsing.
+
+    Strings may be unenclosed, or enclosed by single quotes (') or double quotes (").
+    JSON object keys may be unenclosed, or enclosed by single quotes (') or double quotes (").
+    Accepts unescaped single quotes (') in strings that are unenclosed or enclosed by double quotes (").
+    Accepts unescaped double quotes (") in strings that are unenclosed or enclosed by single quotes (').
+    ... 
+
+MODE_JSON_SIMPLE
+
+Equivalent to: ACCEPT_USELESS_COMMA | USE_HI_PRECISION_FLOAT
+
+    Custom parser strictness modes
+
+The JSON Smart parser can also be configured to mix several options at once:
+
+new JSONPasser(JSONPasser.ACCEPT_SIMPLE_QUOTE | JSONPasser.ACCEPT_LEADING_ZERO);
+
+ACCEPT_SIMPLE_QUOTE
+
+If enabled: Accepts strings enclosed by single quotes (') in addition to strings enclosed by double quotes (").
+
+If disabled: Throws ParseException on a string enclosed by single quotes if ACCEPT_NON_QUOTE is disabled, returns a String enclosed by single quotes if ACCEPT_NON_QUOTE is enabled.
+ACCEPT_NON_QUOTE
+
+If enabled: Accepts unenclosed strings in addition to strings enclosed by double quotes ("). and single quotes (') if ACCEPT_SIMPLE_QUOTE option is enabled.
+
+If disabled: Throws ParseException on a string that isn't enclosed.
+IGNORE_CONTROL_CHAR
+
+If enabled: Ignores control characters in parsed text.
+
+If disabled: Throws ParseException on an unexpected control character.
+ACCEPT_NAN
+
+If enabled: Parses NaN literals as java.lang.Float.NaN
+
+If disabled: Returns NaN or throws ParseException if ACCEPT_NON_QUOTE is enabled.
+ACCEPT_LEADING_ZERO
+
+If enabled: Accepts leading zeros in parsed numbers.
+
+If disabled: Throws ParseException on redundant leading zeros in numbers.
+ACCEPT_USELESS_COMMA
+
+If enabled: Accepts redundant commas in parsed JSON arrays and objects.
+
+If disabled: Throws ParseException on redundant commas.
+Java type mapping
+
+The JSON Smart library applies the following mapping between JSON and Java entities:
+
+JSON 	Java
+true|false 	java.lang.Boolean
+number 	java.lang.Number
+string 	java.lang.String
+array 	net.minidev.json.JSONArray (implements java.util.List)
+object 	net.minidev.json.JSONObject (implements java.util.Map)
+null 	null
+
+JSON Smart can parse JSON numbers into the following java.lang.Number instances:
+
+    For integer amounts: java.lang.Integer, java.lang.Long or java.math.BigInteger
+    For fraction amounts: java.lang.Float, java.lang.Double or java.math.BigDecimal 
+
+The number parsing policy in MODE_RFC4627 and MODE_PERMISSIVE:
+
+For integer amounts:
+
+    If the integer fits within the int datatype it is returned as java.lang.Integer
+    If the integer exceeds the int datatype it is returned as java.lang.Long
+    If the integer exceeds the long_datatype it is returned as java.math.BigInteger 
+
+For fraction amounts:
+
+    If the fraction amount fits within the double datatype it is returned as java.lang.Double
+    If the fraction amount exceeds the double datatype it is returned as java.math.BigDecimal 
+
+The following constant flags modify the number parsing behaviour:
+USE_INTEGER_STORAGE
+
+If enabled: Uses java.lang.Integer for integer amounts, else java.lang.Long or java.math.BigInteger for larger values.
+
+If Disabled: Uses java.lang.Long for integer amounts, or java.math.BigInteger for larger values.
+USE_HI_PRECISION_FLOAT
+
+If Enabled: Uses java.lang.Double for fraction amounts, or java.math.BigDecimal for larger or higher precision values.
+
+If Diabled: Uses java.lang.Float for all fraction amounts.
+ACCEPT_TAILLING_DATA
+
+If Enabled: Uses Json-smart allow junk data at the end of the inputs.
+
+If Diabled: Uses Json-smart throws ParseException if non space data is present after the end of inputs.
+JSON Simple Compatibility
+
+see Migrating from JSON Simple To JSON Smart
+
+JSON Smart is a fork of JSON Simple and provides parsing mode MODE_JSON_SIMPLE for ensuring backwards compatibility:
+
+    Accepts redundant commas in parsed JSON arrays and objects.
+    Uses java.lang.Long as preferred class for integer amounts, else java.math.BigInteger on overflow.
+    Uses java.lang.Double as preferred class for fraction amounts, else java.math.BigDecimal on overflow. 
+    
+    
+  
