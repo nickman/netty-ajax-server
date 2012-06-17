@@ -40,7 +40,7 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
  * <p><code>org.helios.netty.examples.state.StringReporter</code></p>
  */
 @Sharable
-class StringReporter extends SimpleChannelUpstreamHandler {
+public class StringReporter extends SimpleChannelUpstreamHandler {
 	/** Channel local field to hold the number of times the current channel's frame decoder was called */
 	public static final ChannelLocal<Integer> frameDecodeCalls = new ChannelLocal<Integer>(true);
 	/**
@@ -54,9 +54,7 @@ class StringReporter extends SimpleChannelUpstreamHandler {
 			int[] ret = new int[2];
 			ret[0] = ((String)msg).length();
 			ret[1] = frameDecodeCalls.get(e.getChannel());
-			//System.out.println("Calls:" + ret[1]);
-			//ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), Channels.future(e.getChannel()), ret, e.getChannel().getRemoteAddress()));			
-			ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), Channels.future(e.getChannel()), msg.toString() + "\n", e.getChannel().getRemoteAddress()));
+			ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), Channels.future(e.getChannel()), ret, e.getChannel().getRemoteAddress()));						
 		} else {
 			System.err.println("WTF..... anything getting here should be a string but we got a [" + msg.getClass().getName() + "]");
 		}

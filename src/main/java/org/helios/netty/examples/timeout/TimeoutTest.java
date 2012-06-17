@@ -53,31 +53,30 @@ public class TimeoutTest {
 	public static void main(String[] args) {
 		// Supress logging to keep output clean
 		InternalLoggerFactory.setDefaultFactory(new Log4JLoggerFactory());
-		
 		BasicConfigurator.resetConfiguration();
 		Logger.getRootLogger().setLevel(Level.OFF);
 		// Timeout on I/O		
 		timeoutTest(10, 500);
-		
-		
 		// Wait a bit so output is clear
 		try { Thread.sleep(2000); } catch (Exception e) {}
 		System.out.println("===============================");
-		
 		// Timeout on future
 		timeoutTest(500, 10);
-		
 		try { Thread.currentThread().join(5000); } catch (Exception e) {}
 		
 		
 	}
 	
-	public static void timeoutTest(long ioTimeout, long futureTimeout) {		
+	public static void timeoutTest(long ioTimeout, long futureTimeout) {
+		// Create a map with the channel options
 		Map<String, Object> options = new HashMap<String, Object>();
 		options.put("connectTimeoutMillis", ioTimeout);
+		// Create the client
 		// Not providing any handlers since we're not using any for this test
 		SimpleNIOClient client = new SimpleNIOClient(options);
+		// Issue a connect operation
 		ChannelFuture cf = client.connect("heliosapm.com", 80);		
+		// Add a completion listener
 		cf.addListener(new ChannelFutureListener() {
 			public void operationComplete(ChannelFuture future) throws Exception {
 				if(future.isSuccess()) {
@@ -86,12 +85,14 @@ public class TimeoutTest {
 					if(future.isCancelled()) {
 						clog("Request Cancelled");
 					} else {
-						clog("Socket Timeout Exception:Success: " + future.isSuccess() + "  Done: " + future.isDone()  + "  Cause: "+ future.getCause());
+						clog("Connect Exception:Success: " + future.isSuccess() + "  Done: " + future.isDone()  + "  Cause: "+ future.getCause());
 					}
 				}
 			}
 		});
+		// Wait at least futureTimeout for the operation to complete
 		cf.awaitUninterruptibly(futureTimeout);
+		// If the operation is not complete, cancel it.
 		if(!cf.isDone()) {
 			clog("Channel Future Still Waiting. Cancelled:" + cf.cancel());
 		}

@@ -77,77 +77,6 @@ public class SimpleNIOServer {
 	protected AtomicBoolean started = new AtomicBoolean(false);
 	
 	
-	/**
-	 * Boots a SimpleNIOServer instance
-	 * @param args None
-	 */
-	public static void main(String[] args) {
-		// The DelimiterBasedFrameDecoder is not sharable
-		// so we need to wrap it's configuration in a ChannelHandlerProviderFactory
-		// so that a new one is created for each new pipeline created
-		// The ChannelPipelineFactoryImpl is a stickler for types, so all primitive supporting 
-		// types are assumed to be primitive
-		ChannelHandlerProvider frameDecoder = ChannelHandlerProviderFactory.getInstance(
-				"frameDecoder", 
-				//DelimiterBasedFrameDecoder.class,
-				InstrumentedDelimiterBasedFrameDecoder.class,
-					Integer.MAX_VALUE, 
-					true, 
-					true, 
-					new ChannelBuffer[]{ChannelBuffers.wrappedBuffer("|".getBytes())}
-		);
-		// The String decoder is sharable so we wrap it in a simple SharedChannelHandlerProvider
-		ChannelHandlerProvider stringDecoder = ChannelHandlerProviderFactory.getInstance("stringDecoder", new StringDecoder());
-		// Lastly, we need a "business" handler. It is sharable so we wrap it in a simple SharedChannelHandlerProvider
-		ChannelHandlerProvider stringReporter = ChannelHandlerProviderFactory.getInstance("stringReporter", new StringReporter());
-		
-		
-		// We want to send some numbers back to the caller, so we need an ObjectEncoder
-		// We're going to use a simple groovy client to submit strings, so it needs to be a CompatibleObjectEncoder
-		// which is not sharable so we need to wrap it's configuration in a ChannelHandlerProviderFactory
-		ChannelHandlerProvider objectEncoder = ChannelHandlerProviderFactory.getInstance(
-				"objectEncoder", 
-				CompatibleObjectEncoder.class); 
-		
-		ChannelHandlerProvider stringEncoder = ChannelHandlerProviderFactory.getInstance(
-				"stringEncoder", 
-				StringEncoder.class); 
-		
-		
-		// Create a map for the channel options
-		Map<String, Object> channelOptions = new HashMap<String, Object>();
-		channelOptions.put("connectTimeoutMillis", 100);
-		
-		channelOptions.put("reuseAddress", true);
-		channelOptions.put("tcpNoDelay", true );
-		channelOptions.put("soLinger", 20000);
-		channelOptions.put("keepAlive", true );
-		channelOptions.put("receiveBufferSize", 43690 );
-		channelOptions.put("sendBufferSize", 2048 );
-
-		channelOptions.put("child.tcpNoDelay", true );
-		channelOptions.put("child.keepAlive", true );
-		channelOptions.put("child.receiveBufferSize", 43690 );
-		channelOptions.put("child.sendBufferSize", 2048 );
-
-		
-		// Create the server and start it 
-		// Note that the objectEncoder is the only downstream handler, so its position in the pipeline is unimportant
-		// but all the others **must** be in this order  ---------------------------------------------------------------------\/-----------------\/---------------------\/  
-		SimpleNIOServer server = new SimpleNIOServer(8080, channelOptions, stringEncoder, frameDecoder, stringDecoder, stringReporter);
-		server.start();		
-		JMXHelper. fireUpRMIRegistry("0.0.0.0", 8003);
-		JMXHelper.fireUpJMXServer("0.0.0.0", 100, "service:jmx:rmi://hserval:8002/jndi/rmi://hserval:8003/jmxrmi", ManagementFactory.getPlatformMBeanServer());
-		
-		try { 
-			Thread.currentThread().join(5000);
-			server.stop();
-			slog("Server Stopped");
-			Thread.currentThread().join();
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-		}
-	}
 	
 	/**
 	 * Creates a new SimpleNIOServer
@@ -217,7 +146,7 @@ public class SimpleNIOServer {
 //
 	
 	public static void slog(Object msg) {
-		System.out.println("[Server]:" + msg);
+		System.out.println("[Server][" + Thread.currentThread() + "]:" + msg);
 	}
 
 }
