@@ -413,14 +413,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1302328"
-     inkscape:cx="427.20669"
+     inkscape:cx="364.9363"
      inkscape:cy="387.70978"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="1010"
-     inkscape:window-x="0"
+     inkscape:window-x="1920"
      inkscape:window-y="26"
      inkscape:window-maximized="1" />
   <metadata
@@ -431,7 +431,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -510,27 +510,6 @@
              id="flowPara5282-9"
              style="font-size:11px;font-weight:bold;-inkscape-font-specification:Purisa Bold">ObjectInputStream</flowPara></flowRoot>      </g>
     </g>
-    <g
-       transform="matrix(1.2989843,0,0,1.4577107,245.80765,-191.12054)"
-       id="g5332">
-      <path
-         inkscape:connector-curvature="0"
-         id="path7389-0-1"
-         d="m 176.881,488.46536 c 12.16845,0 23.19477,-1.7632 31.29708,-4.68005 4.05114,-1.45841 7.36555,-3.20089 9.73866,-5.2207 2.3731,-2.01981 3.81869,-4.37883 3.81869,-6.89335 0,-4.49821 -4.41208,-8.30595 -11.09238,-11.13412 -6.00883,-2.54388 -14.08893,-4.32594 -23.19499,-5.13622 l 17.33563,-12.94193 -1.43454,-1.8585 -40.89431,15.17213 c -8.61695,1.07282 -16.0547,3.05736 -21.45738,5.72757 -5.44659,2.6919 -8.97088,6.16808 -8.97088,10.17107 0,2.51452 1.42538,4.87354 3.79848,6.89335 2.37309,2.01981 5.70771,3.76229 9.75886,5.2207 8.10229,2.91685 19.12861,4.68005 31.29708,4.68005 z m 0,-2.23021 c -11.85744,0 -22.59767,-1.75751 -30.24643,-4.51109 -3.82439,-1.37678 -6.87835,-3.00129 -8.91027,-4.73073 -2.03193,-1.72943 -3.0307,-3.50898 -3.0307,-5.32207 0,-2.88628 2.64195,-5.76608 7.65757,-8.24499 5.01564,-2.47891 12.26438,-4.43971 20.70982,-5.47413 l 0.18184,-0.0338 0.16163,-0.0507 33.23673,-12.33372 -13.21387,9.86695 -2.34374,1.75713 3.13173,0.18585 c 10.09994,0.62695 18.97863,2.5465 25.21546,5.18691 6.23683,2.64042 9.61743,5.89715 9.61743,9.14045 0,1.81309 -0.99878,3.59264 -3.0307,5.32207 -2.03193,1.72944 -5.0859,3.35395 -8.91027,4.73073 -7.64878,2.75358 -18.36879,4.51109 -30.22623,4.51109 z"
-         style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#8ec9ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4.13410282;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans" />
-      <flowRoot
-         transform="translate(101.84734,230.60896)"
-         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
-         id="flowRoot3946"
-         xml:space="preserve"><flowRegion
-           id="flowRegion3948"><rect
-             y="237.1181"
-             x="51.590553"
-             height="65.480316"
-             width="176.59842"
-             id="rect3950" /></flowRegion><flowPara
-           style="font-size:12px"
-           id="flowPara3952">Phew !!</flowPara></flowRoot>    </g>
     <rect
        inkscape:export-ydpi="90"
        inkscape:export-xdpi="90"
@@ -936,5 +915,28 @@
            id="flowPara3952-0-1-9">My boss is going</flowPara><flowPara
            id="flowPara5971"
            style="font-size:7.99383307px;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Purisa Bold">to kill me...</flowPara></flowRoot>    </g>
+    <g
+       id="g4088"
+       transform="matrix(0.99588579,-0.09061732,0.09061732,0.99588579,256.10996,-43.59893)">
+      <rect
+         y="499.37875"
+         x="91.131668"
+         height="27.427979"
+         width="253.92998"
+         id="rect3164"
+         style="fill:#ffffff;fill-opacity:1;stroke:#0000f7;stroke-width:1.023;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4084"
+         y="521.49811"
+         x="93.78598"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#0000f4;fill-opacity:1;font-family:Vemana2000;-inkscape-font-specification:Vemana2000"
+           y="521.49811"
+           x="93.78598"
+           id="tspan4086"
+           sodipodi:role="line">BUSY. Can't talk now.</tspan></text>
+    </g>
   </g>
 </svg>

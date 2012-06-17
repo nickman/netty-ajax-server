@@ -9,7 +9,7 @@
   <url>https://github.com/nickman/netty-ajax-server#readme</url>
   <properties>
     <junit.version>4.8.2</junit.version>
-    <netty.version>3.4.1.Final</netty.version>
+    <netty.version>3.5.0.Final</netty.version>
     <json.version>20090211</json.version>
     <log4j.version>1.2.16</log4j.version>
     <reflections.version>0.9.5</reflections.version>

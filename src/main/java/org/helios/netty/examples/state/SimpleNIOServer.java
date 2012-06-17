@@ -38,7 +38,9 @@ import org.helios.netty.jmx.JMXHelper;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.socket.ServerSocketChannel;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.CompatibleObjectEncoder;
 import org.jboss.netty.handler.codec.string.StringDecoder;
@@ -118,6 +120,7 @@ public class SimpleNIOServer {
 		
 		channelOptions.put("reuseAddress", true);
 		channelOptions.put("tcpNoDelay", true );
+		channelOptions.put("soLinger", 20000);
 		channelOptions.put("keepAlive", true );
 		channelOptions.put("receiveBufferSize", 43690 );
 		channelOptions.put("sendBufferSize", 2048 );
@@ -137,6 +140,9 @@ public class SimpleNIOServer {
 		JMXHelper.fireUpJMXServer("0.0.0.0", 100, "service:jmx:rmi://hserval:8002/jndi/rmi://hserval:8003/jmxrmi", ManagementFactory.getPlatformMBeanServer());
 		
 		try { 
+			Thread.currentThread().join(5000);
+			server.stop();
+			slog("Server Stopped");
 			Thread.currentThread().join();
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -172,7 +178,7 @@ public class SimpleNIOServer {
 	public void start() {
 		bootstrap.bind(listenerSocket);
 		started.set(true);
-		slog("Listening on 8080"); 
+		slog("Listening on 8080. PID:" + ManagementFactory.getRuntimeMXBean().getName().split("@")[0]); 
 	}
 	
 	/**

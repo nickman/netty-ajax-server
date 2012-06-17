@@ -81,7 +81,7 @@ public class ExecutorThreadFactory implements ThreadFactory {
 	@Override
 	public Thread newThread(Runnable r) {
 		Thread t = new Thread(threadGroup, r, prefix + "Thread#" + serial.incrementAndGet());
-		t.setDaemon(daemon);
+		t.setDaemon(daemon);		
 		return t;
 	}
 

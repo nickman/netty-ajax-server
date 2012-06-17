@@ -60,9 +60,6 @@ public class ChannelHandlerProviderFactory  {
 	 * @return a new ChannelHandlerProvider 
 	 */
 	public static ChannelHandlerProvider getInstance(String name, Class<? extends ChannelHandler> handlerClass, Object...args) {
-		if(handlerClass.getAnnotation(ChannelHandler.Sharable.class)!=null) {
-			System.err.println("Warning: The channel handler [" + handlerClass.getName() + "] is annotated as @Sharable but has been configured in an exclusive ChannelHandlerProvider");
-		}		
 		return new ExclusiveChannelHandlerProvider(name, handlerClass, args);
 	}
 

@@ -50,7 +50,7 @@ public class TimeoutChannel implements Channel, TimerTask {
 	/** The wrapped channel */
 	protected final Channel channel;
 	/** Indicates if this session is keep alive */
-	protected final boolean keepAlive;
+	protected final boolean keepAlive; 
 	/** The client specified timeout */
 	protected final long timeout;
 	/** The current timeout */
@@ -316,6 +316,26 @@ public class TimeoutChannel implements Channel, TimerTask {
 	 */
 	public ChannelFuture setReadable(boolean readable) {
 		return channel.setReadable(readable);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see org.jboss.netty.channel.Channel#getAttachment()
+	 */
+	@Override
+	public Object getAttachment() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see org.jboss.netty.channel.Channel#setAttachment(java.lang.Object)
+	 */
+	@Override
+	public void setAttachment(Object attachment) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
