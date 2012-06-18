@@ -14,7 +14,7 @@ for(n in 1..outerLoops) { header.append("Loop ${n} Elapsed Time,Loop ${n} FD Cal
 header.deleteCharAt(header.length()-1);
 header.append("\n");
 file.setText(header.toString());
-int[] socketReceiveSizes = [56, 1144, 2288, 4576, 9152, 18304, 36608, 73216, 146432, 292864, 585728] as int[];
+int[] socketReceiveSizes = [ 1144, 2288, 4576, 9152, 18304, 36608, 73216, 146432, 292864, 585728] as int[];
 rawResults = new TreeMap();
 socketReceiveSizes.each() {
     rawResults.put(it, []);
