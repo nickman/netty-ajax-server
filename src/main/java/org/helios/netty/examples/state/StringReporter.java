@@ -31,6 +31,7 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.channel.socket.SocketChannel;
 
 /**
  * <p>Title: StringReporter</p>
@@ -51,9 +52,11 @@ public class StringReporter extends SimpleChannelUpstreamHandler {
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
 		Object msg = e.getMessage();
 		if(msg instanceof String) {
-			int[] ret = new int[2];
+			int[] ret = new int[3];
 			ret[0] = ((String)msg).length();
 			ret[1] = frameDecodeCalls.get(e.getChannel());
+			ret[2] = ((SocketChannel)e.getChannel()).getConfig().getReceiveBufferSize();			
+			//System.out.println("Receive Buffer Size:" + ret[2]);
 			ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), Channels.future(e.getChannel()), ret, e.getChannel().getRemoteAddress()));						
 		} else {
 			System.err.println("WTF..... anything getting here should be a string but we got a [" + msg.getClass().getName() + "]");
