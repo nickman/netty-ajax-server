@@ -106,7 +106,17 @@ public class AdjustableSocketBufferSizeServer {
 		// Create the server and start it 
 		// Note that the objectEncoder is the only downstream handler, so its position in the pipeline is unimportant
 		// but all the others **must** be in this order  ---------------------------------------------------------------------\/-----------------\/---------------------\/  
+
+		// =====================================================================
+		// Comment the next line to ditch the CompatibleObjectEncoder from the pipeline
+		// =====================================================================		
 		SimpleNIOServer server = new SimpleNIOServer(8080, channelOptions, objectEncoder, frameDecoder, stringDecoder, stringReporter);
+		
+		// =====================================================================
+		// Uncomment the next line to ditch the CompatibleObjectEncoder from the pipeline
+		// =====================================================================				
+		//SimpleNIOServer server = new SimpleNIOServer(8080, channelOptions,  frameDecoder, stringDecoder, stringReporter);
+		
 		server.start();		
 		JMXHelper. fireUpRMIRegistry("0.0.0.0", 8003);
 		JMXHelper.fireUpJMXServer("0.0.0.0", 100, "service:jmx:rmi://hserval:8002/jndi/rmi://hserval:8003/jmxrmi", ManagementFactory.getPlatformMBeanServer());

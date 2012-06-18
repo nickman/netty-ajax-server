@@ -24,6 +24,8 @@
  */
 package org.helios.netty.examples.state;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelLocal;
@@ -55,9 +57,23 @@ public class StringReporter extends SimpleChannelUpstreamHandler {
 			int[] ret = new int[3];
 			ret[0] = ((String)msg).length();
 			ret[1] = frameDecodeCalls.get(e.getChannel());
-			ret[2] = ((SocketChannel)e.getChannel()).getConfig().getReceiveBufferSize();			
-			//System.out.println("Receive Buffer Size:" + ret[2]);
-			ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), Channels.future(e.getChannel()), ret, e.getChannel().getRemoteAddress()));						
+			ret[2] = ((SocketChannel)e.getChannel()).getConfig().getReceiveBufferSize();
+			// =====================================================================
+			//  Uncomment next section to ditch the CompatibleObjectEncoder from the pipeline
+			// =====================================================================
+//			ChannelBuffer intBuffer = ChannelBuffers.buffer(12);
+//			for(int i = 0; i < 3; i++) {
+//				intBuffer.writeInt(ret[i]);
+//			}
+//			ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), Channels.future(e.getChannel()), intBuffer, e.getChannel().getRemoteAddress()));
+			// =====================================================================
+			
+			// =====================================================================
+			// Comment the next line to ditch the CompatibleObjectEncoder from the pipeline
+			// =====================================================================
+			ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), Channels.future(e.getChannel()), ret, e.getChannel().getRemoteAddress()));
+			
+			
 		} else {
 			System.err.println("WTF..... anything getting here should be a string but we got a [" + msg.getClass().getName() + "]");
 		}
