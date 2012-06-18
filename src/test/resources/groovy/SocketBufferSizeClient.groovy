@@ -1,8 +1,11 @@
-import org.helios.gmx.*;
+import javax.management.*;
+import javax.management.remote.*;
 def gmx = null;
 def socket = null;
 int outerLoops = 5;
 int innerLoops = 100;
+
+
 file = new File(System.getProperty("java.io.tmpdir") + File.separator + "socketTimings2.csv");
 file.delete();
 println "File:${file}";
@@ -11,8 +14,7 @@ for(n in 1..outerLoops) { header.append("Loop ${n} Elapsed Time,Loop ${n} FD Cal
 header.deleteCharAt(header.length()-1);
 header.append("\n");
 file.setText(header.toString());
-//int[] socketReceiveSizes = [2, 48, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536] as int[];
-int[] socketReceiveSizes = [8192, 16384, 32768, 65536] as int[];
+int[] socketReceiveSizes = [56, 1144, 2288, 4576, 9152, 18304, 36608, 73216, 146432, 292864, 585728] as int[];
 rawResults = new TreeMap();
 socketReceiveSizes.each() {
     rawResults.put(it, []);
@@ -23,19 +25,26 @@ System.getProperties().each() { k, v ->
 }
 tmp.append("|");
 s = tmp.toString();
-int expectedResponse = s.length()-1;
+int expectedResponse = s.getBytes().length-1;
 println "Payload Length:${expectedResponse}";
+def connector = null;
+def invokeMethod = null;
 try {
-    gmx = Gmx.remote("service:jmx:rmi://hserval:8002/jndi/rmi://hserval:8003/jmxrmi");
-    simpleNioServer = gmx.mbean("org.helios.netty:service=ServerBootstrap,name=SimpleNIOServer");
-    println "Connected to SimpleNIOServer Management Interface: ${gmx.defaultDomain}";
+    connector = JMXConnectorFactory.connect(new JMXServiceURL("service:jmx:rmi://hserval:8002/jndi/rmi://hserval:8003/jmxrmi"));
+    mbserver = connector.getMBeanServerConnection();
+    mbserver.getClass().getDeclaredMethods().each() {
+        if(it.getName().equals("invoke")) invokeMethod = it;
+    }
+    invokeMethod.setAccessible(true);
+    //invokeMethod = mbserver.getClass().getDeclaredMethod("invoke", ObjectName.class, String.class, Object[].class, String[].class);
+    on = new ObjectName("org.helios.netty:service=ServerBootstrap,name=SimpleNIOServer");
+    println "Connected to SimpleNIOServer Management Interface: ${mbserver.defaultDomain}";
     println "\n\t========================\n\tStarting Loop\n\t========================\n";
     for(y in 1..outerLoops) {
     Object[] result = null;
         socketReceiveSizes.each() { rBuffSize ->
-            simpleNioServer.setChannelOption("child.receiveBufferSize", rBuffSize);
-            simpleNioServer.setChannelOption("child.sendBufferSize", rBuffSize);
-            recSize = simpleNioServer.getChannelOption("child.receiveBufferSize");
+            invokeMethod.invoke(mbserver, on, "setChannelOption", ["child.receiveBufferSize", rBuffSize] as Object[], [String.class.getName(), "int"] as String[]);
+            //mbserver.invoke(on, "setChannelOption", ["child.receiveBufferSize", rBuffSize] as Object[], [String.class.getName(), "int"] as String[]);
             //println "Bufer Size:${recSize}";
             try {        
                 socket = new Socket("localhost", 8080);
@@ -61,6 +70,7 @@ try {
                     }
                     result = ois.readObject();
                     assert result[0] == expectedResponse;
+                    assert result[2] == rBuffSize;
                     fdCallsTotal += result[1];
                     fdCalls[x-1] = result[1];
                 }
@@ -87,5 +97,5 @@ try {
     }
     println "Complete";
 } finally {    
-    try { gmx.close(); } catch (e) {}
+    try { connector.close(); } catch (e) {}
 }    
