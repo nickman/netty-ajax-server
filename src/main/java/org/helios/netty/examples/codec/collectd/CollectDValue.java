@@ -33,17 +33,20 @@ package org.helios.netty.examples.codec.collectd;
  */
 
 public class CollectDValue {
+	/** The value name */
+	private final String name;
 	/** The part data type */
 	private final CollectDType type;
 	/** The part value */
 	private final double  value;
 	/**
 	 * Creates a new CollectDValue
+	 * @param name The value name 
 	 * @param type The part data type
 	 * @param value The part value
 	 */
-	public CollectDValue(CollectDType type, double value) {
-		super();
+	public CollectDValue(String name, CollectDType type, double value) {
+		this.name = name;
 		this.type = type;
 		this.value = value;
 	}
@@ -60,6 +63,24 @@ public class CollectDValue {
 	 */
 	public double getValue() {
 		return value;
+	}
+	/**
+	 * Returns the value name 
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	/**
+	 * {@inheritDoc}
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("CollectDValue [name=").append(name).append(", type=")
+				.append(type).append(", value=").append(value).append("]");
+		return builder.toString();
 	}
 	
 	

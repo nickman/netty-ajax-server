@@ -46,7 +46,13 @@ public enum CollectDType {
     ABSOLUTE(new NumberType(){ public Integer getNativeType(double dval) { return (int)dval;}});
 	
 	/** Decodes an ordinal into the corresponding CollectDType  */
-	private static final Map<Integer, CollectDType> ORD2TYPE = new HashMap<Integer, CollectDType>(CollectDType.values().length);
+	private static final Map<Byte, CollectDType> ORD2TYPE = new HashMap<Byte, CollectDType>(CollectDType.values().length);
+	
+	static {
+		for(CollectDType type: CollectDType.values()) {
+			ORD2TYPE.put(new Byte((byte) type.ordinal()), type);
+		}
+	}
 	
 	private static interface NumberType {
 		public Number getNativeType(double dval);
@@ -72,9 +78,18 @@ public enum CollectDType {
 	 * @param ordinal The oridnal to decode
 	 * @return the type decoded from the passed ordinal
 	 */
-	public static CollectDType decode(int ordinal) {
+	public static CollectDType decode(byte ordinal) {
 		CollectDType type = ORD2TYPE.get(ordinal);
 		if(type==null) throw new IllegalArgumentException("The passed ordinal [" + ordinal + "] is not a valid CollectDType ordinal", new Throwable());
 		return type;
+	}
+	
+	/**
+	 * 
+	 * Returns the ordinal as a byte
+	 * @return the ordinal as a byte
+	 */
+	public byte byteOrdinal() {
+		return (byte)ordinal();
 	}
 }

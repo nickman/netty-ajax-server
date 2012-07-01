@@ -25,30 +25,17 @@
 package org.helios.netty.examples.codec.collectd;
 
 /**
- * <p>Title: CollectDItem</p>
- * <p>Description: Represents a hierarchical set of collectd metrics submitted in one datagram.</p> 
+ * <p>Title: CollectDKey</p>
+ * <p>Description: Enumerates the collectd stream keys in order of appearance</p> 
  * <p>Company: Helios Development Group LLC</p>
  * @author Whitehead (nwhitehead AT heliosdev DOT org)
- * <p><code>org.helios.netty.examples.codec.collectd.CollectDItem</code></p>
+ * <p><code>org.helios.netty.examples.codec.collectd.CollectDKey</code></p>
  */
 
-public class CollectDItem {
-    /** The name of the host to associate with associated data values  */
-    protected String hostName;
-    /** The timestamp to associate with associated data values, UTC time format  */
-    protected long time;
-    /** The interval to associate with associated data values, UTC time format  */
-    protected long interval;    
-    
-    /** The plugin name to associate with associated data values, e.g. "cpu"  */
-    protected String pluginName;
-    
-    
-    /** The plugin instance name to associate with associated data values, e.g. "1"  */
-    protected String pluginInstance;
-    /** The type name to associate with associated data values, e.g. "cpu"  */
-    protected String typeName;
-    /** The type instance name to associate with associated data values, e.g. "idle"  */
-    protected String typeInstanceName;
-
+public enum CollectDKey {
+	HOST,
+	PLUGIN,
+	PLUGIN_INSTANCE,
+	PLUGIN_TYPE,
+	PLUGIN_ENTRY;
 }
