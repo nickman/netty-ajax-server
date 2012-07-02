@@ -345,8 +345,40 @@
 	}
 	/**
 	 * Starts the long poll push
-	 */
+	 */	
 	function startLongPoll() {
+		var timeout = null;
+		timeout = $('#lpolltimeout').attr('value');
+		if(isNumber(timeout)) {
+			timeout = '/?timeout=' + timeout;
+		} else {
+			timeout = '';
+		}		
+		xhr = $.ajaxSettings.xhr(); 
+		xhr.open('GET', "/lpoll" + timeout, true);
+		var on = onEvent;			
+		xhr.onreadystatechange = function() {
+			console.info("LPOLL Stat [%s] Content Size:[%s]", xhr.readyState, (xhr.responseText==null ? 0 : xhr.responseText.length));
+			if (xhr.readyState == 1) {
+				busyOn();
+			}
+			if (xhr.readyState == 4) {         
+		    	try {
+		    		busyOff();
+		        	var json = $.parseJSON(xhr.responseText);
+		        	on(json);		        	
+		    	} catch (e) {
+		    		on({'error':e});	
+		    	}					    	
+		    } 
+		}; 
+		xhr.send(null);									
+	}
+	
+	/**
+	 * Starts the long poll push
+	 */
+	function startLongPollX() {
 		var on = onEvent;
 		var timeout = null;
 		timeout = $('#lpolltimeout').attr('value');
