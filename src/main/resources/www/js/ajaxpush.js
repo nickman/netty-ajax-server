@@ -16,10 +16,64 @@
 	var treeVisible = true;
 	var metricIdMatch = new RegExp('\\[.*\\]');
 	var metricIdReplace = /\[|\]/g;
+	var pOptions = null;
+	var optionDialogButtons;
+	
 	/**
 	 * Initializes the client
 	 */
 	$(function(){		
+	
+		/**
+		 * Set up the options management and configure the options dialog box
+		 * =======================================================
+		 */
+		pOptions = new PCookie("netty.ajax.options", true, 
+				/* Defaults  */   {
+			'pushtype' : 'ws',             // options are streamer, lpoll and ws
+			'autoStart' : false,
+			'polltime' : 15000,
+			'delaytime' : 500
+		}, 
+				/* Init Values  */   {}
+		);
+		pOptions.load()
+		pOptions.autoLoad('#ajaxconfig .configitem')
+		pOptions.push();
+		
+		$('#pushtype').change(function(){
+			console.info("Selected Push Type:%s", $(this).val());
+			if($(this).val()=='lpoll') {
+				$('.displayForLongPoll').show();
+			} else {
+				$('.displayForLongPoll').hide();
+			}
+		}); 
+		if($('#pushtype').val()=='lpoll') {
+			$('.displayForLongPoll').show();
+		} else {
+			$('.displayForLongPoll').hide();
+		}
+		
+		optionDialogButtons = [
+		                       {
+		                    	   text: "Ok",
+		                    	   click: function() { 
+		                    		   pOptions.pull().save();
+		                    		   console.info("Saved pOptions:%o", pOptions._values);
+		                    		   $('#options-dialog').dialog("close"); 		                    		   
+		                    	   }
+		                       },
+		                       {
+		                    	   text: "Cancel",
+		                    	   click: function() { $('#options-dialog').dialog("close"); }
+		                       }		                       
+		];
+
+		
+		/**
+		 * =======================================================
+		 */
 	try {
 		$(".err-msg").css('width', '40%');	
 		$(".err-msg").bind('click', function() {
@@ -38,6 +92,13 @@
 			$('#streamer_label').remove();
 			$('.stream').remove();
 		}
+		
+		$('#controlOptions').bind('click', function() {
+			$( "#options-dialog" ).dialog({
+				buttons : optionDialogButtons 
+			});
+		});
+
 		$('#controlButton').bind('click', function() {
 			if(running) {
 				stop();
@@ -68,11 +129,6 @@
 			}
 			$.cookie('ajax.push.format', outputChart, { expires: 365 });
 		});
-		$('#autoStart').bind('change', function(event) {
-			var as = $('#autoStart').prop("checked");
-			$.cookie('ajax.autostart', $('#autoStart').prop("checked"), { expires: 365 });
-			console.info("AutoStart Cookie:%s", as);
-		});
 		// =====================================
 		//		Initialize Tree
 		// =====================================
@@ -101,7 +157,9 @@
 			$('#dlg-name').keydown(function(event) { if(event.keyCode==13) $('#addChartButton').click(); });
 			var selected = [];
 			$.each($("#metricTreeDiv").dynatree("getSelectedNodes"), function(index, node) {
-				selected.push(node.data.key);				
+				if(!node.data.isFolder) {
+					selected.push(node.data.key);
+				}
 			} );
 			$("#dlg-metrics-ids").text(selected.join('\n'));
 			
@@ -167,33 +225,7 @@
 		
 		$("#displayChart").show();
 		
-		var savedPushType = $.cookie('ajax.push.pushtype');
-		if(savedPushType!=null) {
-			//console.info("Restored Last Push Type:" + savedPushType);
-			$('#' + savedPushType).attr("checked", "checked");
-			var ps = $('input[type="radio"][name="pushtype"][checked="checked"]');
-			if(ps.size()==1) {
-				$('h3.pushtypeh').removeClass('pushtypesel')
-				$('input[type="radio"][name="pushtype"][checked="checked"]').parent('div').last().prev().addClass('pushtypesel')
-			}
-		}
 		
-		var savedFormat = $.cookie('ajax.push.format');
-		if(savedFormat!=null) {
-			if(savedFormat) {
-				//console.info("Restored Format. Chart:" + savedFormat);
-				outputChart = savedFormat;
-				if(!outputChart) {								
-					$("#outputFormat").button({ label: "Output:Raw" })
-					$("#displayChart").hide();
-					$("#displayRaw").show();
-				} else {					
-					$("#outputFormat").button({ label: "Output:Charts" })
-					$("#displayChart").show();
-					$("#displayRaw").hide();				
-				}				
-			}
-		}
 		$('.chartClose').live('click', function() {			
 			var chart = this.parentElement.id;
 			delete dataListeners[chart];
@@ -202,20 +234,11 @@
 		$('#chartBtn').bind('click', function(){
 			
 		});
-		var autoStart = false;
-		autoStart = $.cookie('ajax.autostart');
-		console.info("AutoStart:%s", autoStart);		
+		var autoStart = pOptions.get("autoStart");
+		console.info("AutoStart:%s", autoStart);
 		if(autoStart) {
-			$('#autoStart').prop("checked", "checked");
 			$('#controlButton').click();
 		}
-		//addCharts();
-		
-//		$('#displayChart').append('<div id="mysvg" style="width:400;height:300;" class="chartplaceholder"></div>');
-//		$('#mysvg').svg();
-//		$('#mysvg').load('svg/savant.svg');
-//		$('#mysvg').append('<span class="svgresizer, ui-icon ui-icon-circle-triangle-s"></span>');
-//		$('#mysvg').resizable().draggable();
 		
 	} catch (e) {
 		//console.error(e);
@@ -294,12 +317,7 @@
 	 */
 	function start() {
 		chartData = [{label: "Boss Active Threads", data: []}, {label: "Worker Active Threads", data: []}];
-		var pType = $("input:radio[name='pushtype'][checked='checked']");
-		if(pType==null || pType.size()<1) {			
-			errorMessage("No push type was selected. Pick a push type.")
-			return false;
-		} 
-		pushtype = pType[0].id;
+		pushtype =  pOptions.get("pushtype");
 		if(pushtype==null) {
 			//console.error("No push type");
 			return false;
@@ -347,32 +365,51 @@
 	 * Starts the long poll push
 	 */	
 	function startLongPoll() {
-		var timeout = null;
-		timeout = $('#lpolltimeout').attr('value');
-		if(isNumber(timeout)) {
-			timeout = '/?timeout=' + timeout;
-		} else {
-			timeout = '';
-		}		
-		xhr = $.ajaxSettings.xhr(); 
-		xhr.open('GET', "/lpoll" + timeout, true);
-		var on = onEvent;			
-		xhr.onreadystatechange = function() {
-			console.info("LPOLL Stat [%s] Content Size:[%s]", xhr.readyState, (xhr.responseText==null ? 0 : xhr.responseText.length));
-			if (xhr.readyState == 1) {
-				busyOn();
-			}
-			if (xhr.readyState == 4) {         
-		    	try {
-		    		busyOff();
-		        	var json = $.parseJSON(xhr.responseText);
-		        	on(json);		        	
-		    	} catch (e) {
-		    		on({'error':e});	
-		    	}					    	
-		    } 
-		}; 
-		xhr.send(null);									
+			var _timeout = pOptions.get('polltime')
+			var _pauseTime = pOptions.get('pausetime');
+			var timeout = _timeout==null ? "" : '/?timeout=' + _timeout;
+			xhr = $.ajaxSettings.xhr(); 
+			xhr.open('GET', "/lpoll" + timeout, true);
+			var on = onEvent;			
+			xhr.onreadystatechange = function() {
+				console.info("LPOLL Stat [%s] Content Size:[%s]", xhr.readyState, (xhr.responseText==null ? 0 : xhr.responseText.length));
+				if (xhr.readyState == 1) {
+					busyOn();
+				}
+				if (xhr.readyState == 4) {         
+			    	try {
+			    		busyOff();
+			        	var json = $.parseJSON(xhr.responseText);
+			        	on(json);		        
+			        	if(!running) return; 
+						timeoutHandle = setTimeout(function() { 
+							if(running) startLongPoll();
+						}, _pauseTime); 
+			    	} catch (e) {
+			    		on({'error':e});	
+			    	}					    	
+			    } 
+			}; 
+			xhr.send(null);
+	}
+	
+	/**
+	 * Returns the value attribute of an id'ed jquery element parsed as a number
+	 * @param name The jquery element id
+	 * @param defaultValue The default value
+	 * @returns the parsed value if found and parsed as a number, or the default value
+	 */
+	function getInputNumber(name, defaultValue) {
+		try {
+			var n = $('#' + name).attr('value');
+			if(isNumber(n)) {
+				return parseFloat(n);
+			} else {
+				return defaultValue;
+			}		
+		} catch (e) {
+			return defaultValue;
+		}
 	}
 	
 	/**
@@ -790,4 +827,268 @@
 		return items.join('');
 	}
 
+	/**
+	 * Creates a new persistence cookie
+	 * @param name The name of the cookie
+	 * @param autosave If true, the cookie will be autosaved when modified
+	 * @param defaults Optional defaults
+	 * @param values Optional initial values
+	 * @returns a new persistent cookie.
+	 */
+	function PCookie (name, autosave, defaults, values) {
+		this._name = name;
+		this._autosave = new Boolean(autosave).valueOf();
+		this._values = {};
+		this._defaults = {};
+		this._binders = {};
+		if(defaults!=null) {
+			for(var d in defaults) {
+				this._defaults[d] = defaults[d];
+			}
+		}
+		if(values!=null) {
+			for(var d in values) {
+				this.values[d] = values[d];
+			}
+		}
+		/**
+		 * Returns the name of this persistent cookie
+		 */
+		this.toString = function() {
+			return this._name + '[autosave:' + this._autosave + ', values:' + this.getCount(this._values) + ', defaults:' + this.getCount(this._defaults) + ']'; 
+		};
+		
+		this.getCount = function(v) {
+			var c = 0;
+			for(var a in v) {
+				c++;
+			}
+			return c;
+		}
+		
+		/**
+		 * Saves the PCookie using the supplied name 
+		 * @return this PCookie
+		 */
+		this.save = function() {
+			$.cookie(this._name, JSON.stringify(this._values));
+			return this;
+		}
+		
+		/**
+		 * Loads the named PCookie from storage
+		 * @return this PCookie
+		 */
+		this.load = function() {
+			var json = $.cookie(this._name);
+			if(json!=null) {
+				var props = JSON.parse(json);
+				if(props!=null) {
+					for(var k in props) {
+						this._values[k] = props[k];
+					}
+				}
+			}
+			for(var k in this._defaults) {
+				if(!this.keyExists(k)) {
+					this._values[k] = this._defaults[k];
+				}
+			}
+			this.save();
+			return this;
+		}
+		
+		/**
+		 * Sets a value in the cookie
+		 * @param key The key of the value
+		 * @param value The value
+		 * @return the prior value
+		 */
+		this.set = function(key, value) {
+			if(key==null) throw "Null Keys Not Allowed";
+			if(value==null) throw "Null Values Not Allowed. Use PCookie.delete(key) to remove values";
+			var oldValue = this._values[key];
+			this._values[key] = value;
+			if(this._autosave) {
+				this.save();
+			}
+			return oldValue;
+		}
+		
+		/**
+		 * Returns the value configured for the passed key
+		 * @param key The key of the value
+		 * @param defaultValue The value returned, if not null, if the keyed value is not bound and has no pre-configured default value
+		 * @return the keyed value
+		 */
+		this.get = function(key, defaultValue) {
+			if(key==null) throw "Null Keys Not Allowed";
+			var a =  this.getOrDefault(key);
+			if(a==null) a = defaultValue;
+			return a;			
+		}
+		
+		/**
+		 * Returns the value configured for the passed key
+		 * @param key The key of the value
+		 * @return the keyed value
+		 */
+		this.getOrDefault = function(key) {
+			if(key==null) throw "Null Keys Not Allowed";
+			return this._values[key] || this._defaults[key];
+		}
+		
+		/**
+		 * Returns the value bound to the passed key, or null if it is not defined.
+		 * @param the key of the value
+		 * @return the bound value or null
+		 */
+		this.getOrNull= function(key) {
+			return this._values[key];
+		}		
+		
+		/**
+		 * Determines if a non-default value is defined for the passed key
+		 * @param the key of the value
+		 * @return true if the key exists, false otherwise
+		 */
+		this.keyExists = function(key) {
+			return this.getOrNull(key)!=null;
+		}
+		
+		/**
+		 * Deletes the named key
+		 * @param key The key of the value
+		 * @return the deleted value
+		 */
+		this.deleteKey = function(key) {
+			if(key==null) throw "Null Keys Not Allowed";
+			var oldVal = this._values[key];
+			delete this._values[key];
+			return oldVal;
+		}
+		
+		/**
+		 * Sets the autosave flag
+		 * @param true to enable, false to disable
+		 * @return this PCookie
+		 */
+		this.setAutosave = function(autosave) {
+			this._autosave = new Boolean(autosave).valueOf();
+			return this;
+		}
+		
+		/**
+		 * Indicates if autosave is enabled
+		 * @return true if autosave is enabled, false otherwise
+		 */
+		this.isAutosave = function() {
+			return this._autosave;
+		}
+		
+		/**
+		 * Locates matching elements from the passed selector and creates binders for each one.
+		 * If a key is not defined for an autovalue, the value will be set.
+		 * @param selector the jquery selector
+		 * @return this PCookie
+		 */
+		this.autoLoad = function(selector) {
+			if(selector==null) throw "Null Selector Not Allowed";
+			var pc = this;
+			$(selector).each(function(){
+				var key = $(this).attr('id');
+				var isCb = this.type=='checkbox';
+				var jq = this;
+				pc.registerBinder(key, key, 
+						function(){
+							isCb ? $(jq).attr('checked', pc.get(key)) : $(jq).val(pc.get(key));
+						}, 
+						function(){
+							pc._values[key] = isCb ? $(jq).is(':checked') : $(jq).val();
+						}
+				);
+				if(!pc.keyExists(key)) {
+					pc.set(key, isCb ? $(this).is(':checked') : $(this).val());
+				}
+			});
+			return this;
+		}
+		
+		/**
+		 * Registers a binder pair for the specified key
+		 * @param key The key to register the binders on
+		 * @param id The id of the widget to establish binding for
+		 * @param write A function called to bind the keyed value to the UI widget
+		 * @param read  A function called to bind the UI widget state to the PCookie
+		 */
+		this.registerBinder = function(key, id,  write, read) {
+			if(key==null) throw "Null Keys Not Allowed";
+			if(id==null) throw "Null Widget ID Not Allowed";
+			var sel = '#' + id;
+			if($(sel).size()!=1) {
+				throw "Invalid count for widget id [" + sel + "] : " + $(sel).size(); 
+			}			
+			this._binders[key] = [write, read];
+		}
+		
+		/**
+		 * Binds all matching keyed values to the corresponding UI element
+		 * @return this PCookie
+		 */
+		this.push = function() {
+			for(var binder in this._binders) {
+				this._binders[binder][0]();
+			}
+			return this;
+		}
+		
+		/**
+		 * Loads bound properties from the corresponding UI element into this PCookie
+		 * @return this PCookie
+		 */
+		this.pull = function() {
+			for(var binder in this._binders) {
+				this._binders[binder][1]();
+			}
+			return this;
+		}
+		
+		/**
+		 * Returns an array of the current property set keys
+		 * @return an array of keys
+		 */
+		this.keys = function() {
+			var k = [];
+			for(var key in this._values) {
+				k.push(key);
+			}
+			return k;
+		}
+		
+		/**
+		 * Returns a copy of the current key/value pairs
+		 * @return a copy of the current key/value pairs
+		 */
+		this.entrySet = function() {
+			var k = {};
+			for(var key in this._values) {
+				k[key] = this._values[k];
+			}
+			return k;
+			
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
