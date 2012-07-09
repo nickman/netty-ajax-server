@@ -144,6 +144,7 @@ public class Server {
 		channelFactory = new NioServerSocketChannelFactory(bossPool, workerPool);
 		bstrap = new ServerBootstrap(channelFactory);
 		bstrap.setPipelineFactory(pipelineFactory);
+		bstrap.setOption("child.keepAlive", true);
 		bstrap.bind(isock);
 		LOG.info("Netty-Ajax Server Started with Root [" + contentRoot + "]");		
 		try { Thread.currentThread().join(); } catch (Exception e) {

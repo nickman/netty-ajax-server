@@ -320,6 +320,9 @@ public class MetricCollector extends NotificationBroadcasterSupport implements M
 	public void run() {
 		try {
 			updateMetricNames();
+			long channelCount = SharedChannelGroup.getInstance().size();
+			//log.info("\n\tChanne,l Count:" + channelCount);
+			submitMetric("netty.channels.count", channelCount);
 			Notification notif = new Notification(MetricProvider.METRIC_NOTIFICATION, OBJECT_NAME, tick.incrementAndGet(), System.currentTimeMillis());
 			final JSONObject json = new JSONObject();
 			final JSONObject envelope = new JSONObject();

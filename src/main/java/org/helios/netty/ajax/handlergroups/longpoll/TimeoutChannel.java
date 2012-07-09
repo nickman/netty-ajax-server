@@ -77,7 +77,7 @@ public class TimeoutChannel implements Channel, TimerTask {
 		this.keepAlive = keepAlive;
 		log = Logger.getLogger(getClass().getName() + "." + channel.getId());
 		timerTimeout.getAndSet(timer.newTimeout(this, this.timeout, TimeUnit.MILLISECONDS));
-		SharedChannelGroup.getInstance().add(this);
+		//SharedChannelGroup.getInstance().add(this);
 	}
 	
 	/**

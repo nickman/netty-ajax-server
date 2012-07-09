@@ -35,17 +35,11 @@
 	<body id="main">
 		<h3>Netty Ajax Server</h3>
 		
-		<div id="pushtypes" style="position: relative;">
-    			<label for="streamer" id="streamer_label" >HTTP Streaming:</label>
-				<input type="radio" id="streamer" name="pushtype" >
-				<label for="ws" id="ws_label">WebSockets:</label>
-				<input type="radio" id="ws" name="pushtype"  >
-				<label for="lpoll" id="lpoll_label" >Long Poll:</label>
-				<input type="radio" id="lpoll" name="pushtype">
-				<label for="lpolltimeout" id="lpoll_lpolltimeout">Long Poll Timeout (ms):</label>
-				<input type="number" id="lpolltimeout" value="3000" size="6" >
-				<label for="responsecount">Responses:</label>
-				<input type="number" id="responsecount" class="counter" size="7" value="0" disabled="disabled" >
+		<div id="progress" style="position: relative;">
+				<div class="xx" style="display:none;">
+					<label for="timeoutcount" >Timeouts:</label>
+					<input type="number" id="timeoutcount" class="counter" size="7" value="0" disabled="disabled" >
+				</div>
 				<div id="longpollbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>
 		</div>
  
@@ -62,12 +56,14 @@
 		
 		
 		<div id="controls" class="controlx">
+			<button id="controlOptions">Options</button>
 			<button id="controlButton">Start</button>
 			<button id="clearButton">Clear</button>
 			<button id="outputFormat">Output:Charts</button>
+			<label for="responsecount">Responses:</label>
+			<input type="number" id="responsecount" class="counter" size="7" value="0" disabled="disabled" >
+			
 			<!-- <button id="addScriptButton">Add Script</button> -->
-			<label for="autoStart">Auto Start:</label>
-			<input type="checkbox" id="autoStart" title="Auto Start" />			
 		</div>
 		
 		
@@ -124,7 +120,25 @@
 			</pre>					
 		</div>
 		
-		
+		<div id="options-dialog" title="Netty Ajax Server Options">
+			<div id="ajaxconfig">
+			<select id="pushtype" class="configitem">
+				<option value='ws'>WebSockets</option>
+				<option value='lpoll'>Long Polling</option>
+				<option value='streamer'>Streaming HTTP</option>
+			</select>
+			<br/>
+			<label for="autoStart">Auto Start:</label>
+			<input type="checkbox" id="autoStart" title="Auto Start" class="configitem"  />						
+			<div id="longpoll-options" style="display:none;" class="displayForLongPoll" >
+				<label for="polltime" >Long Poll Timeout (ms):</label>
+				<input type="number" id="polltime" value="3000" size="6" class="configitem"  >
+				<br/>
+				<label for="delaytime">Long Poll Pause Time (ms):</label>
+				<input type="number" id="delaytime" value="1000" size="6" class="configitem"  >			
+			</div>
+		</div>
+		</div>
 	</div>
 		
 	
