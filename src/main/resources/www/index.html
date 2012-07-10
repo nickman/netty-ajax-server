@@ -35,13 +35,6 @@
 	<body id="main">
 		<h3>Netty Ajax Server</h3>
 		
-		<div id="progress" style="position: relative;">
-				<div class="xx" style="display:none;">
-					<label for="timeoutcount" >Timeouts:</label>
-					<input type="number" id="timeoutcount" class="counter" size="7" value="0" disabled="disabled" >
-				</div>
-				<div id="longpollbusy" class="busyindicator"><img src="img/ajax-loader.gif" /></div>
-		</div>
  
 			<div id="metricTreeUl" class="mtree" > 
 				<div style="display: inline-block;width: 100%;" class="ui-widget-header"><span id="metricTreeToggleIcon" class="ui-icon ui-icon-circle-triangle-s ui-widget-header" style="display: inline-block;vertical-align:middle;" ></span><span style="display: inline-block;vertical-align:middle;" id="metricTreeToggler">Metrics Dictionary</span></div>
@@ -55,15 +48,18 @@
  
 		
 		
-		<div id="controls" class="controlx">
-			<button id="controlOptions">Options</button>
-			<button id="controlButton">Start</button>
-			<button id="clearButton">Clear</button>
-			<button id="outputFormat">Output:Charts</button>
-			<label for="responsecount">Responses:</label>
-			<input type="number" id="responsecount" class="counter" size="7" value="0" disabled="disabled" >
-			
-			<!-- <button id="addScriptButton">Add Script</button> -->
+		<div id="controls">
+			<div style="white-space: nowrap">
+			<button id="controlOptions" class="controlx">Options</button>
+			<button id="controlButton" class="controlx">Start</button>
+			<button id="clearButton" class="controlx">Clear</button>
+			<button id="outputFormat" class="controlx">Output:Charts</button>
+			<span class="controlx"><label for="responsecount">Responses:</label>
+			<input type="number" id="responsecount" class="counter" size="5"  width="7" value="0" disabled="disabled" ></input></span>									
+			<div class="controlx" style="font-weight: lighter;">Push Type:<div id="pushtypeDisplay" class="controlx"></div></div>
+			&nbsp;&nbsp;&nbsp;
+			<div id="longpollbusy" class="controlx busyindicator" ><img src="img/ajax-loader.gif" /></div>
+			</div>
 		</div>
 		
 		
@@ -123,9 +119,9 @@
 		<div id="options-dialog" title="Netty Ajax Server Options">
 			<div id="ajaxconfig">
 			<select id="pushtype" class="configitem">
-				<option value='ws'>WebSockets</option>
-				<option value='lpoll'>Long Polling</option>
-				<option value='streamer'>Streaming HTTP</option>
+				<option value='ws' id="polltype-ws">WebSockets</option>
+				<option value='lpoll' id="polltype-lpoll">Long Polling</option>
+				<option value='streamer' id="polltype-streamer" >Streaming HTTP</option>
 			</select>
 			<br/>
 			<label for="autoStart">Auto Start:</label>

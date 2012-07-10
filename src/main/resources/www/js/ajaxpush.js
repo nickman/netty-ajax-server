@@ -43,12 +43,15 @@
 		
 		$('#pushtype').change(function(){
 			console.info("Selected Push Type:%s", $(this).val());
+			
+			$('#pushtypeDisplay').text($("#pushtype option[value='" + $('#pushtype').val() + "']").text());
 			if($(this).val()=='lpoll') {
 				$('.displayForLongPoll').show();
 			} else {
 				$('.displayForLongPoll').hide();
 			}
 		}); 
+		$('#pushtypeDisplay').text($("#pushtype option[value='" + $('#pushtype').val() + "']").text());
 		if($('#pushtype').val()=='lpoll') {
 			$('.displayForLongPoll').show();
 		} else {
@@ -237,7 +240,17 @@
 		var autoStart = pOptions.get("autoStart");
 		console.info("AutoStart:%s", autoStart);
 		if(autoStart) {
-			$('#controlButton').click();
+			setTimeout(function() {
+				try {
+					if(start()) {						
+						$('#controlButton').button({label: "Stop"});
+						running = true;
+					}		
+				} catch (e) {
+					console.error("Failed to autostart:%o", e);
+				}
+			}, 1);
+			
 		}
 		
 	} catch (e) {
@@ -294,7 +307,7 @@
 	 * Turns the busy indicator on
 	 */
 	function busyOn() {
-		$('div.busyindicator').css({'display':'block'});
+		$('div.busyindicator').css({'display':'inline-block'});
 	}
 	/**
 	 * Turns the busy indicator off
@@ -455,16 +468,21 @@
 		}; 
 		ws.onerror = function(e) {
 			busyOff();
-			//console.info("WebSocket Error");
+			console.info("WebSocket Error");
 			//console.dir(e);
 		}; 
 		ws.onclose = function() { 
 			busyOff();
-			//console.info("WebSocket Closed"); 
+			console.info("WebSocket Closed"); 
 		}; 
-		ws.onmessage = function(msg) {			
-			var json = $.parseJSON(msg.data);
-			on(json);
+		ws.onmessage = function(msg) {
+			busyOff();
+			try {
+				var json = $.parseJSON(msg.data);
+				on(json);
+			} finally {
+				busyOn();
+			}
 		}; 
 	}
 	/**
@@ -475,7 +493,9 @@
 			try { xhr.abort(); } catch (e) {}
 			xhr = null;
 		} else if(ws!=null) {
-			try { ws.close(); } catch (e) {}
+			try { ws.onmessage = null; ws.close(); console.info("Called for ws close");} catch (e) {
+				console.error("Failed to stop ws:%o", e);
+			}
 			ws = null;					
 		}
 		if(timeoutHandle!=null) {
@@ -483,6 +503,7 @@
 		}
 		$('#statemsg').html("");
 		pushtype = "";
+		busyOff();
 	}
 	/**
 	 * Called when data is delivered through push

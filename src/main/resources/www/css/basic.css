@@ -113,10 +113,10 @@ tfoot th em {
 	}	
 	
 div.busyindicator {
-	display:block;
-	position:absolute;
-    top:0;
-    right:2px;
+
+	
+    
+    
 	
 }
 
@@ -138,6 +138,7 @@ div.output-content {
 	position:relative;
 	left:10px;
 	top:20px;
+	
 }
 
 div.controls {
@@ -147,12 +148,12 @@ div.controls {
 }
 
 div.controlx {
-	position:relative;
-	left:10px;
-	top: 10px;
+	display: inline-block;
+	white-space: normal;
 }
 
 div.chart {
+	
 	position:relative;
 	width:20%;
 	height:20%
@@ -215,18 +216,18 @@ table.legend {
 }
 
 div.chartTitle {
-	position: absolute;
-	right:30%;
+	position: relative;
 	overflow: inherit;
 	font-size-adjust: inherit;
-	font-size: smaller;
+	font-size: medium;
 	font-stretch: ultra-condensed;
-	font-weight: lighter;
+	font-weight: bold;
 	overflow-x: hidden;
     color: #000;
-    opacity: 0.3;	
+    opacity: 0.9;	
 }
 
 .ui-resizable-helper { 
-	border: 2px dotted #00F; 
+	border: 2px dotted #00F;
+	
 }
